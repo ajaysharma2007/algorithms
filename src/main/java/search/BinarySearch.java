@@ -8,12 +8,12 @@ public class BinarySearch {
 
     private int[] sourceArr = new int[] {1,2,3,4,5,6,7,8,9};
     private int min = 0;
-    private int max = sourceArr.length;
+    private int max = sourceArr.length - 1;
 
     public static void main(String[] args) {
 
         BinarySearch binarySearch = new BinarySearch();
-        int foundIndex = binarySearch.binarySearch(10);
+        int foundIndex = binarySearch.binarySearch(7);
         if (foundIndex == -1) {
             System.out.println("Number not present in the array");
         } else {
