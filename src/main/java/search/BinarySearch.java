@@ -4,6 +4,8 @@
 
 package search;
 
+import java.util.Arrays;
+
 public class BinarySearch {
 
     private int[] sourceArr = new int[] {1,2,3,4,5,6,7,8,9};
@@ -13,12 +15,18 @@ public class BinarySearch {
     public static void main(String[] args) {
 
         BinarySearch binarySearch = new BinarySearch();
-        int foundIndex = binarySearch.binarySearch(9);
-        if (foundIndex == -1) {
-            System.out.println("Number not present in the array");
-        } else {
-            System.out.println("Number found at location : " + foundIndex);
-        }
+        Arrays.stream(binarySearch.sourceArr).map(arrayNum -> {
+            binarySearch.min = 0;
+            binarySearch.max = binarySearch.sourceArr.length - 1;
+            int foundIndex = binarySearch.binarySearch(arrayNum);
+            if (foundIndex == -1) {
+                System.out.println("Number not present in the array");
+            } else {
+                System.out.println("Number found at location : " + foundIndex);
+            }
+            return arrayNum;
+        }).count();
+
     }
 
     public int binarySearch(int findNum) {
