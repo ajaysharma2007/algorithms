@@ -13,7 +13,7 @@ public class BinarySearch {
     public static void main(String[] args) {
 
         BinarySearch binarySearch = new BinarySearch();
-        int foundIndex = binarySearch.binarySearch(7);
+        int foundIndex = binarySearch.binarySearch(9);
         if (foundIndex == -1) {
             System.out.println("Number not present in the array");
         } else {
@@ -23,7 +23,7 @@ public class BinarySearch {
 
     public int binarySearch(int findNum) {
 
-        while (max > min) {
+        while (max >= min) {
 
             int guess = (min + max)/2;
 
