@@ -2,6 +2,23 @@
  * Created by ajay on 07/09/16.
  */
 
+/*
+    - max need to be equal to array length - 1
+    - And exit condition needs to be: min <= max.
+    - Only if both of the above conditions are true only then all indexes in as array will be covered.
+ */
+
+/*
+    - If we take following condition:
+        - max = array length and
+        - exit condition => min < max
+            - Here we can't have min = max because then if both min and max becomes equal to array length then it will be
+            ArrayIndexOutOfBound exception.
+        - In this scenario if we take array as [1,2,3,4,5] then only following indexes will be covered:
+            - 2, 4, 0
+
+ */
+
 package search;
 
 import java.util.Arrays;
