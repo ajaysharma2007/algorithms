@@ -62,7 +62,7 @@ public class BinarySearch {
                 return guess;
             } else if (findNum < sourceArr[guess]) {
                 max = guess - 1;
-            } else if (findNum > sourceArr[guess]) {
+            } else {
                 min = guess + 1;
             }
         }
