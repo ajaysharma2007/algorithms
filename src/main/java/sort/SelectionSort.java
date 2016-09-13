@@ -41,27 +41,27 @@ import java.util.Arrays;
 
 public class SelectionSort {
 
-    private int[] sourceArr = new int[] {9,8,7,6,5,4,3,2,1};
+    private int[] sourceArr = new int[]{9, 8, 7, 6, 5, 4, 3, 2, 1};
 
     public static void main(String[] args) {
 
         SelectionSort selectionSort = new SelectionSort();
         selectionSort.selectionSort(selectionSort.sourceArr);
         Arrays.stream(selectionSort.sourceArr).map(sortedArrElem -> {
-            System.out.print(sortedArrElem+", ");
+            System.out.print(sortedArrElem + ", ");
             return sortedArrElem;
         }).count();
     }
 
     private void selectionSort(int[] unsortedArr) {
 
-        for (int i = 0; i < unsortedArr.length-1; i++) {
+        for (int i = 0; i < unsortedArr.length - 1; i++) {
 
             int minimumIndex = i;
 
-            for (int j = i; j<unsortedArr.length-1; j++) {
-                if (unsortedArr[minimumIndex] > unsortedArr[j+1]) {
-                    minimumIndex = j+1;
+            for (int j = i; j < unsortedArr.length - 1; j++) {
+                if (unsortedArr[minimumIndex] > unsortedArr[j + 1]) {
+                    minimumIndex = j + 1;
                 }
             }
 
