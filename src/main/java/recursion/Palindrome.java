@@ -16,10 +16,10 @@ public class Palindrome {
 
     public static void main(String[] args) {
 
-        System.out.println(isPalindrome("a"));
-        System.out.println(isPalindrome(""));
-        System.out.println(isPalindrome("rotor"));
-        System.out.println(isPalindrome("asdff"));
+        System.out.println(isPalindrome2("a"));
+        System.out.println(isPalindrome2(""));
+        System.out.println(isPalindrome2("rotor"));
+        System.out.println(isPalindrome2("asdff"));
     }
 
     private static boolean isPalindrome(String str){
@@ -35,5 +35,15 @@ public class Palindrome {
         }
 
         return isPalindrome(str.substring(1, strLength-1));
+    }
+
+    private static boolean isPalindrome2(String str) {
+
+        for (int i = 0; i < str.length()/2; i++) {
+            if(str.charAt(i) != str.charAt(str.length()-i-1)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
