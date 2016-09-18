@@ -24,7 +24,7 @@ import java.util.Arrays;
     - swap() runs n times. It's complexity will be linear.
         - 3n
 
-    - selectionSort() does assignment and increment operations only ans hence will be linear.
+    - selectionSort() does assignment and increment operations only and hence will be linear.
         - Θ(n)
 
     - Adding up the running times for the three parts:

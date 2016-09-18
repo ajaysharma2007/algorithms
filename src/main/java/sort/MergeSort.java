@@ -46,7 +46,7 @@ import java.util.Arrays;
          one time. Computer scientists like to consider whether an algorithm works in place, because there are some systems where space is at a premium,
          and thus in-place algorithms are preferred.
 
-         Algorithm       Worst-case running time	  Best-case running time	 Average-case running time
+        Algorithm       Worst-case running time	  Best-case running time	 Average-case running time
 
         Selection sort      Θ(n^2)	                  Θ(n^​2)	                 Θ(n^2)
         Insertion sort      Θ(n^2)	                  Θ(n)                       Θ(n^​2)
