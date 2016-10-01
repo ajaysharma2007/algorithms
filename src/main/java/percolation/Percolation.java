@@ -7,10 +7,9 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  */
 public class Percolation {
 
-    private int gridSize = 0;
-    private WeightedQuickUnionUF uf;
-    private boolean[][] grid;
-    private boolean percolates = false;
+    int gridSize = 0;
+    WeightedQuickUnionUF uf;
+    boolean[][] grid;
 
     // create n-by-n grid, with all sites blocked
     public Percolation(int n) {
@@ -53,7 +52,7 @@ public class Percolation {
         if (i == 1) {
             uf.union(0, xyTo1D(i, j));
         } else if (i == this.gridSize) {
-            this.percolates = this.uf.connected(0, xyTo1D(i, j));
+            uf.union(getUnionSize() - 1, xyTo1D(i, j));
         }
     }
 
@@ -71,7 +70,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return this.percolates;
+        return this.uf.connected(0, getUnionSize() - 1);
     }
 
     private int xyTo1D(int x, int y) {
@@ -87,6 +86,6 @@ public class Percolation {
     }
 
     private int getUnionSize() {
-        return (int) (Math.pow(this.gridSize, 2) + 1);
+        return (int) (Math.pow(this.gridSize, 2) + 2);
     }
 }
