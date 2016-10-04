@@ -30,8 +30,10 @@ public class Percolation {
 
     // This stores the size of the grid passed as input.
     private int gridSize = 0;
-    // This stores WeightedQuickUnionUF for union/find operations.
-    private WeightedQuickUnionUF uf;
+    // This stores WeightedQuickUnionUF for union/find operations for percolation.
+    private WeightedQuickUnionUF percolatesWQUF;
+    // This stores WeightedQuickUnionUF for union/find operations for isFull op.
+    private WeightedQuickUnionUF fullWQUF;
     // This stores the open/closed status of the sites.
     private boolean[][] grid;
 
@@ -48,7 +50,8 @@ public class Percolation {
             throw new IllegalArgumentException("Grid size can't be less than zero.");
         }
         gridSize = n;
-        uf = new WeightedQuickUnionUF(getUnionSize());
+        percolatesWQUF = new WeightedQuickUnionUF(getUnionSize());
+        fullWQUF = new WeightedQuickUnionUF(getUnionSize()-1);
         grid = new boolean[n + 1][n + 1];
 
         for (int i = 1; i <= n; i++) {
@@ -71,27 +74,32 @@ public class Percolation {
     public void open(int i, int j) {
         validateGridIndex(i, j);
         if (i > 1 && isOpen(i - 1, j)) {
-            this.uf.union(xyTo1D(i, j), xyTo1D(i - 1, j));
+            this.percolatesWQUF.union(xyTo1D(i, j), xyTo1D(i - 1, j));
+            this.fullWQUF.union(xyTo1D(i, j), xyTo1D(i - 1, j));
         }
 
         if (i < this.gridSize && isOpen(i + 1, j)) {
-            this.uf.union(xyTo1D(i, j), xyTo1D(i + 1, j));
+            this.percolatesWQUF.union(xyTo1D(i, j), xyTo1D(i + 1, j));
+            this.fullWQUF.union(xyTo1D(i, j), xyTo1D(i + 1, j));
         }
 
         if (j > 1 && isOpen(i, j - 1)) {
-            this.uf.union(xyTo1D(i, j), xyTo1D(i, j - 1));
+            this.percolatesWQUF.union(xyTo1D(i, j), xyTo1D(i, j - 1));
+            this.fullWQUF.union(xyTo1D(i, j), xyTo1D(i, j - 1));
         }
 
         if (j < this.gridSize && isOpen(i, j + 1)) {
-            this.uf.union(xyTo1D(i, j), xyTo1D(i, j + 1));
+            this.percolatesWQUF.union(xyTo1D(i, j), xyTo1D(i, j + 1));
+            this.fullWQUF.union(xyTo1D(i, j), xyTo1D(i, j + 1));
         }
 
         grid[i][j] = true;
 
         if (i == 1) {
-            uf.union(0, xyTo1D(i, j));
+            percolatesWQUF.union(0, xyTo1D(i, j));
+            fullWQUF.union(0, xyTo1D(i, j));
         } else if (i == this.gridSize) {
-            uf.union(getUnionSize() - 1, xyTo1D(i, j));
+            percolatesWQUF.union(getUnionSize() - 1, xyTo1D(i, j));
         }
     }
 
@@ -127,7 +135,7 @@ public class Percolation {
      */
     public boolean isFull(int i, int j) {
         validateGridIndex(i, j);
-        return this.uf.connected(0, xyTo1D(i, j));
+        return this.fullWQUF.connected(0, xyTo1D(i, j));
     }
 
     /**
@@ -142,7 +150,7 @@ public class Percolation {
      *             both {@code 0 < i <= n} and {@code 0 < j <= n}
      */
     public boolean percolates() {
-        return this.uf.connected(0, getUnionSize() - 1);
+        return this.percolatesWQUF.connected(0, getUnionSize() - 1);
     }
 
     /*
