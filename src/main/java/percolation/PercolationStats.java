@@ -1,14 +1,16 @@
+package percolation;
+
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
 /**
- * The {@code PercolationStats} class represents a
- * <em>PercolationStats data type</em>.
+ * The {@code percolation.PercolationStats} class represents a
+ * <em>percolation.PercolationStats data type</em>.
  * It supports the <em>mean</em>, <em>stddev</em>, <em>confidenceLo</em>
  * operation and a <em>confidenceHi</em> operation.
  * <ul>
  * <li><em>mean</em> returns the mean of percolation thresholds.
- * Percolation threshold is calculated using the ratio of number of
+ * percolation.Percolation threshold is calculated using the ratio of number of
  * open sites required for a system to percolate to the
  * total number of sites in the grid {@code n^2}.
  * This is performed {@code t} times and then an average of
@@ -27,13 +29,11 @@ public class PercolationStats {
     private int gridSize = 0;
     // This stores the number of times the experiment needs to be performed.
     private int numTrials = 0;
-    // This is the percolation data type used for percolation operations.
-    private Percolation percolation = null;
     // This stores the percolation thresholds for each trial.
     private double[] thresholds;
 
     /**
-     * Initializes an empty PercolationStats data structure with gridSize
+     * Initializes an empty percolation.PercolationStats data structure with gridSize
      * {@code n}, number of trials to {@code numTrials}.
      * <p>
      *
@@ -102,7 +102,7 @@ public class PercolationStats {
     }
 
     /*
-        Validates the inputs provided to the PercolationStats object.
+        Validates the inputs provided to the percolation.PercolationStats object.
      */
     private void validateInputs(int size, int trials) {
         if (size <= 0 || trials <= 0) {
@@ -112,21 +112,21 @@ public class PercolationStats {
     }
 
     /*
-       Initializes the Percolation object and populates
+       Initializes the percolation.Percolation object and populates
        the threshold array for n*n grid, numTrials number of times.
     */
     private void populateThresholdValues() {
         for (int i = 1; i <= this.numTrials; i++) {
 
-            this.percolation = new Percolation(this.gridSize);
+            Percolation percolation = new Percolation(this.gridSize);
             int openSites = 0;
-            while (!this.percolation.percolates()) {
+            while (!percolation.percolates()) {
 
                 int x = StdRandom.uniform(1, this.gridSize + 1);
                 int y = StdRandom.uniform(1, this.gridSize + 1);
 
-                if (!this.percolation.isOpen(x, y)) {
-                    this.percolation.open(x, y);
+                if (!percolation.isOpen(x, y)) {
+                    percolation.open(x, y);
                     openSites++;
                 }
             }

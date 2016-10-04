@@ -1,7 +1,10 @@
+package percolation;
+
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 /**
- * The {@code Percolation} class represents a <em>Percolation data type</em>.
+ * The {@code percolation.Percolation} class represents
+ * a <em>percolation.Percolation data type</em>.
  * It supports the <em>isOpen</em>, <em>isFull</em>, <em>open</em> operation
  * and a <em>percolates</em> operation.
  * <ul>
@@ -38,7 +41,8 @@ public class Percolation {
     private boolean[][] grid;
 
     /**
-     * Initializes an empty Percolation data structure with {@code n^2 grid}.
+     * Initializes an empty percolation.Percolation data
+     * structure with {@code n^2 grid}.
      * <p>
      *
      * @param n the size representing the n*n grid.
@@ -98,7 +102,9 @@ public class Percolation {
         if (i == 1) {
             percolatesWQUF.union(0, xyTo1D(i, j));
             fullWQUF.union(0, xyTo1D(i, j));
-        } else if (i == this.gridSize) {
+        }
+
+        if (i == this.gridSize) {
             percolatesWQUF.union(getUnionSize() - 1, xyTo1D(i, j));
         }
     }
