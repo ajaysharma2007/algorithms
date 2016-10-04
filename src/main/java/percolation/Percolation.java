@@ -30,8 +30,11 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
+    // This stores the size of the grid passed as input.
     private int gridSize = 0;
+    // This stores WeightedQuickUnionUF for union/find operations.
     private WeightedQuickUnionUF uf;
+    // This stores the open/closed status of the sites.
     private boolean[][] grid;
 
     /**

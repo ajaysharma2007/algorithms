@@ -25,9 +25,13 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
+    // This stores the size of the grid passed as input.
     private int gridSize = 0;
+    // This stores the number of times the experiment needs to be performed.
     private int numTrials = 0;
+    // This is the percolation data type used for percolation operations.
     private Percolation percolation = null;
+    // This stores the percolation thresholds for each trial.
     private double[] thresholds;
 
     /**
