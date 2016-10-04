@@ -4,19 +4,24 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 /**
  * The {@code Percolation} class represents a <em>Percolation data type</em>.
- * It supports the <em>isOpen</em>, <em>isFull</em>, <em>open</em> operation and a <em>percolates</em> operation.
+ * It supports the <em>isOpen</em>, <em>isFull</em>, <em>open</em> operation
+ * and a <em>percolates</em> operation.
  * <ul>
  * <li><em>isOpen</em>(<em>i</em>, <em>j</em>) returns a boolean
  * indicating that the site represented by index <em>i</em> and <em>j</em>
  * is open or not.
- * <li><em>isFull</em>(<em>i</em>, <em>j</em>) returns a boolean based on the condition that
- * if there is a connection between site represented by index <em>i</em> and <em>j</em> and
+ * <li><em>isFull</em>(<em>i</em>, <em>j</em>)
+ * returns a boolean based on the condition that
+ * if there is a connection between site represented
+ * by index <em>i</em> and <em>j</em> and
  * any site represented by index <em>row {@code 1}, col {@code 1....n}</em>
  * <li><em>open</em>(<em>i</em>, <em>j</em>)
- * This opens a site represented by index <em>i</em>, <em>j</em> by connecting it to
+ * This opens a site represented by
+ * index <em>i</em>, <em>j</em> by connecting it to
  * other adjacent open sites.
  * <li><em>percolates</em>() returns a boolean based on the condition that
- * if there is a connection between any site represented by <em>row {@code 1}, col {@code 1....n}</em>
+ * if there is a connection between any site
+ * represented by <em>row {@code 1}, col {@code 1....n}</em>
  * and any site represented by index <em>row {@code n}, col {@code 1....n}</em>
  * </ul>
  *
@@ -31,11 +36,11 @@ public class Percolation {
 
     /**
      * Initializes an empty Percolation data structure with {@code n^2 grid}.
-     *<p>
+     * <p>
      *
      * @param n the size representing the n*n grid.
      * @throws IllegalArgumentException if {@code n < 0}
-     * </p>
+     *                                  </p>
      */
     public Percolation(int n) {
         if (n <= 0) {
@@ -60,7 +65,7 @@ public class Percolation {
      * @param i the integer representing row  of the site
      * @param j the integer representing column  of the site
      * @throws IndexOutOfBoundsException unless
-     *                                   both {@code 0 < i <= n} and {@code 0 < j <= n}
+     *                  both {@code 0 < i <= n} and {@code 0 < j <= n}
      */
     public void open(int i, int j) {
         validateGridIndex(i, j);
@@ -95,10 +100,11 @@ public class Percolation {
      *
      * @param i the integer representing row  of the site
      * @param j the integer representing column  of the site
-     * @return {@code true} if the site represented by row {@code i}, col {@code j} is open.
+     * @return {@code true} if the site represented
+     * by row {@code i}, col {@code j} is open.
      * {@code false} otherwise
      * @throws IndexOutOfBoundsException unless
-     *                                   both {@code 0 < i <= n} and {@code 0 < j <= n}
+     *              both {@code 0 < i <= n} and {@code 0 < j <= n}
      */
     public boolean isOpen(int i, int j) {
         validateGridIndex(i, j);
@@ -107,7 +113,8 @@ public class Percolation {
 
     /**
      * Returns true if the site represented by row {@code i}, col {@code j} and
-     * any site represented by  row {@code 1}, col {@code 1....n} are in same component.
+     * any site represented by
+     * row {@code 1}, col {@code 1....n} are in same component.
      *
      * @param i the integer representing row  of the site
      * @param j the integer representing column  of the site
@@ -115,7 +122,7 @@ public class Percolation {
      * is connected to any site represented by row {@code 1}, col {@code 1....n}.
      * {@code false} otherwise
      * @throws IndexOutOfBoundsException unless
-     *                                   both {@code 0 < i <= n} and {@code 0 < j <= n}
+     *            both {@code 0 < i <= n} and {@code 0 < j <= n}
      */
     public boolean isFull(int i, int j) {
         validateGridIndex(i, j);
@@ -124,13 +131,14 @@ public class Percolation {
 
     /**
      * Returns true if the site represented by row  {@code 1}, col {@code 1....n} and
-     * any site represented by  row {@code n}, col {@code 1....n} are in same component.
+     * any site represented by
+     * row {@code n}, col {@code 1....n} are in same component.
      *
      * @return {@code true} site represented by row {@code 1}, col {@code 1....n}
      * is connected to any site represented by row {@code n}, col {@code 1....n}.
      * {@code false} otherwise
      * @throws IndexOutOfBoundsException unless
-     *                                   both {@code 0 < i <= n} and {@code 0 < j <= n}
+     *             both {@code 0 < i <= n} and {@code 0 < j <= n}
      */
     public boolean percolates() {
         return this.uf.connected(0, getUnionSize() - 1);
