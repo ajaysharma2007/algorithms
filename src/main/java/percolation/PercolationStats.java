@@ -4,16 +4,38 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
 /**
- * Created by ajay on 01/10/16.
+ * The {@code PercolationStats} class represents a <em>PercolationStats data type</em>.
+ * It supports the <em>mean</em>, <em>stddev</em>, <em>confidenceLo</em> operation and a <em>confidenceHi</em> operation.
+ * <ul>
+ * <li><em>mean</em>(<em>i</em>, <em>j</em>) returns the mean of percolation thresholds.
+ * Percolation threshold is calculated using the ratio of number of open sites required for a system to percolate to the
+ * total number of sites in the grid {@code n^2}.
+ * This is performed {@code t} times and then an average of all the percolation thresholds is taken and returned.
+ * <li><em>stddev</em> returns the standard deviation of percolation thresholds.
+ * <li><em>confidenceLo</em> returns the low endpoint of 95% confidence interval.
+ * <li><em>confidenceHi</em>() returns the high endpoint of 95% confidence interval.
+ * </ul>
+ *
+ * @author Ajay Sharma
  */
+
 public class PercolationStats {
 
-    int gridSize = 0;
-    int numTrials = 0;
-    Percolation percolation = null;
-    double[] thresholds;
+    private int gridSize = 0;
+    private int numTrials = 0;
+    private Percolation percolation = null;
+    private double[] thresholds;
 
-
+    /**
+     * Initializes an empty PercolationStats data structure with gridSize
+     * {@code n}, number of trials to {@code numTrials}.
+     * <p>
+     *
+     * @param n      the size representing the n*n grid.
+     * @param trials representing the number of times experiment needs to be performed.
+     * @throws IllegalArgumentException if {@code n < 0} {@code trials < 0}
+     *                                  </p>
+     */
     public PercolationStats(int n, int trials) {
         validateInputs(n, trials);
         this.gridSize = n;
@@ -23,10 +45,16 @@ public class PercolationStats {
         populateThresholdValues();
     }
 
+    /**
+     * Returns the mean of percolation thresholds for {@code n*n} grid calculated {@code numTrials} times.
+     */
     public double mean() {
         return StdStats.mean(thresholds);
     }
 
+    /**
+     * Returns the standard deviation of percolation thresholds for {@code n*n} grid calculated {@code numTrials} times.
+     */
     public double stddev() {
         if (this.numTrials <= 1) {
             return Double.NaN;
@@ -35,10 +63,16 @@ public class PercolationStats {
         return StdStats.stddev(this.thresholds);
     }
 
+    /**
+     * Returns the low  endpoint of 95% confidence interval for {@code n*n} grid calculated {@code numTrials} times.
+     */
     public double confidenceLo() {
         return this.mean() - ((1.96 * this.stddev()) / Math.sqrt(this.numTrials));
     }
 
+    /**
+     * Returns the high  endpoint of 95% confidence interval for {@code n*n} grid calculated {@code numTrials} times.
+     */
     public double confidenceHi() {
         return this.mean() + ((1.96 * this.stddev()) / Math.sqrt(this.numTrials));
     }
@@ -50,12 +84,18 @@ public class PercolationStats {
         System.out.format("95%% confidence interval    = %s, %s%n", percolationStats.confidenceLo(), percolationStats.confidenceHi());
     }
 
+    /*
+        Validates the inputs provided to the PercolationStats object.
+     */
     private void validateInputs(int gridSize, int numTrials) {
         if (gridSize <= 0 || numTrials <= 0) {
             throw new IllegalArgumentException("Grid size and Number of trials can't be less than zero");
         }
     }
 
+    /*
+       Initializes the Percolation object and populates the threshold array for n*n grid, numTrials number of times.
+    */
     private void populateThresholdValues() {
         for (int i = 1; i <= this.numTrials; i++) {
 
