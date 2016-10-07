@@ -7,10 +7,10 @@ public class BitonicSequenceSearch {
 
     public static void main(String[] args) {
         int[] sourceArr = {2, 10, 7, 5, 3, 1, 0};
-        int findNum = 0;
+        int findNum = -4;
 
         boolean isPresent = new BitonicSequenceSearch().bitonicSearch(findNum, sourceArr);
-        System.out.format("Number is present in the given array %s%n", isPresent);
+        System.out.format("Is %d present in the given array ?   : %s%n", findNum, isPresent);
     }
 
     public boolean bitonicSearch(int findNum, int[] sourceArr) {
@@ -29,13 +29,45 @@ public class BitonicSequenceSearch {
         }
 
         int searchResult = binarySearch(findNum, 0, mid, sourceArr);
-        int result =  searchResult == -1 ? reverseBinarySearch(findNum, mid + 1, sourceArr.length - 1, sourceArr)  : searchResult;
+        int result = searchResult == -1 ? reverseBinarySearch(findNum, mid + 1, sourceArr.length - 1, sourceArr) : searchResult;
+
+        result = search(findNum, mid , sourceArr);
 
         if (result != -1) {
             return true;
         }
 
         return false;
+    }
+
+    private int search(int findNum, int midIndex, int[] sourceArr) {
+        int leftLow = 0;
+        int leftHigh = midIndex;
+
+        int rightLow = midIndex + 1;
+        int rightHigh = sourceArr.length - 1;
+
+        while (leftLow <= leftHigh || rightLow <= rightHigh) {
+            int leftMid = (leftLow + leftHigh) / 2;
+            int rightMid = (rightLow + rightHigh) / 2;
+
+            if (sourceArr[leftMid] < findNum) {
+                leftLow = leftMid + 1;
+            } else if (sourceArr[leftMid] > findNum) {
+                leftHigh = leftMid - 1;
+            } else {
+                return leftMid;
+            }
+
+            if (sourceArr[rightMid] > findNum) {
+                rightLow = rightMid + 1;
+            } else if (sourceArr[rightMid] < findNum) {
+                rightHigh = rightMid - 1;
+            } else {
+                return rightMid;
+            }
+        }
+        return -1;
     }
 
     private int binarySearch(int findNum, int startIndex, int endIndex, int[] sourceArr) {
