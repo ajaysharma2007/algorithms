@@ -1,4 +1,4 @@
-package dynamic_connectivity;
+package dynamicconnectivity;
 
 /**
  * Created by ajay on 9/23/16.
