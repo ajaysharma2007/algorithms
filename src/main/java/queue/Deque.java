@@ -123,7 +123,7 @@ public class Deque<Item> implements Iterable<Item> {
         @Override
         public Item next() {
             if (!hasNext())
-                throw new NoSuchElementException("No element present in the queue.");
+                throw new NoSuchElementException("No next item present in the queue.");
             Item currentItem = currentNode.item;
             currentNode = currentNode.next;
             iteratorPointer++;
