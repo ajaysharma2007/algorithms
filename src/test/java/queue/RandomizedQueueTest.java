@@ -56,10 +56,18 @@ public class RandomizedQueueTest {
     }
 
     @Test
-    public void testIterator() {
+    public void testParallelIterator() {
         RandomizedQueue<String> randomizedQueue = new RandomizedQueue();
         randomizedQueue.enqueue("Test1");
         randomizedQueue.enqueue("Test2");
+        randomizedQueue.enqueue("Test3");
+        randomizedQueue.enqueue("Test4");
+        randomizedQueue.enqueue("Test5");
+        randomizedQueue.enqueue("Test6");
+        randomizedQueue.enqueue("Test7");
+        randomizedQueue.enqueue("Test8");
+        randomizedQueue.enqueue("Test9");
+        randomizedQueue.enqueue("Test10");
         Iterator<String> randomizedQueueIterator1 = randomizedQueue.iterator();
         Iterator<String> randomizedQueueIterator2 = randomizedQueue.iterator();
 
@@ -68,21 +76,21 @@ public class RandomizedQueueTest {
         int count = 0;
         while (randomizedQueueIterator1.hasNext()) {
             String nextVal = randomizedQueueIterator1.next();
-            Assert.assertTrue(nextVal.equals("Test1") || nextVal.equals("Test2"));
             count++;
         }
 
-        Assert.assertEquals(count, 2);
+        Assert.assertEquals(count, 10);
         Assert.assertFalse(randomizedQueueIterator1.hasNext());
         Assert.assertTrue(randomizedQueueIterator2.hasNext());
+
+        System.out.println();
 
         count = 0;
         while (randomizedQueueIterator2.hasNext()) {
             String nextVal = randomizedQueueIterator2.next();
-            Assert.assertTrue(nextVal.equals("Test1") || nextVal.equals("Test2"));
             count++;
         }
-        Assert.assertEquals(count, 2);
+        Assert.assertEquals(count, 10);
         Assert.assertFalse(randomizedQueueIterator2.hasNext());
     }
 }

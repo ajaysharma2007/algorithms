@@ -43,9 +43,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         int random = StdRandom.uniform(lastArrayIndex + 1);
         Item randomItem = items[random];
-        for (int i = random + 1; i <= lastArrayIndex; i++) {
-            items[i - 1] = items[i];
-        }
+        swapArrayIndexes(items, random, lastArrayIndex);
 
         items[lastArrayIndex--] = null;
 
@@ -72,10 +70,15 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private class RandomizedQueueIterator implements Iterator<Item> {
 
         private int iteratorPointer = lastArrayIndex + 1;
+        private Item[] iteratorItems;
 
         RandomizedQueueIterator() {
             if (!isEmpty()) {
                 iteratorPointer = lastArrayIndex;
+                iteratorItems = (Item[]) new Object[lastArrayIndex+1];
+                for (int i = 0; i <= lastArrayIndex; i++) {
+                    iteratorItems[i] = items[i];
+                }
             }
         }
 
@@ -91,9 +94,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
                         "present in the queue.");
             }
             int random = StdRandom.uniform(iteratorPointer + 1);
-            Item randomItem = items[random];
+            Item randomItem = iteratorItems[random];
 
-            swapArrayIndexes(random, iteratorPointer);
+            swapArrayIndexes(iteratorItems, random, iteratorPointer);
             iteratorPointer--;
             return randomItem;
         }
@@ -113,9 +116,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         items = newItemArr;
     }
 
-    private void swapArrayIndexes(int index1, int index2) {
-        Item tempItem = items[index1];
-        items[index1] = items[index2];
-        items[index2] = tempItem;
+    private void swapArrayIndexes(Item[] localItems, int index1, int index2) {
+        Item tempItem = localItems[index1];
+        localItems[index1] = localItems[index2];
+        localItems[index2] = tempItem;
     }
 }

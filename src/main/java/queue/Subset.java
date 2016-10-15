@@ -1,6 +1,7 @@
 package queue;
 
 import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
 
@@ -9,7 +10,7 @@ import java.util.Iterator;
  */
 public class Subset {
     public static void main(String[] args) {
-        int k = Integer.valueOf(args[0]);
+        int k = Integer.parseInt(args[0]);
         String[] stringInputs = StdIn.readAllStrings();
         RandomizedQueue<String> randomizedQueue = new RandomizedQueue<>();
         if (stringInputs != null) {
@@ -17,15 +18,28 @@ public class Subset {
                 throw new IllegalArgumentException("k can't be less " +
                         "than number of input strings.");
             }
-            for (String input : stringInputs) {
-                randomizedQueue.enqueue(input);
+
+            int stringInputsLength = stringInputs.length;
+            for (int j = 0; j < k; j++) {
+                int lastIndex = stringInputsLength - j - 1;
+                int randomNum = StdRandom.uniform(lastIndex+1);
+                randomizedQueue.enqueue(stringInputs[randomNum]);
+                swapArrayIndexes(stringInputs, randomNum, lastIndex);
+                stringInputs[lastIndex] = null;
+
             }
 
             Iterator<String> randomizedQueueIterator = randomizedQueue.iterator();
-
-            for (int j = 0; j < k; j++) {
+            while (randomizedQueueIterator.hasNext()) {
                 System.out.println(randomizedQueueIterator.next());
             }
         }
+    }
+
+    private static void swapArrayIndexes(String[] localItems,
+                                         int index1, int index2) {
+        String tempItem = localItems[index1];
+        localItems[index1] = localItems[index2];
+        localItems[index2] = tempItem;
     }
 }
