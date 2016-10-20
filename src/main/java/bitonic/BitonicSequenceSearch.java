@@ -31,13 +31,7 @@ public class BitonicSequenceSearch {
         int searchResult = binarySearch(findNum, 0, mid, sourceArr);
         int result = searchResult == -1 ? reverseBinarySearch(findNum, mid + 1, sourceArr.length - 1, sourceArr) : searchResult;
 
-        result = search(findNum, mid , sourceArr);
-
-        if (result != -1) {
-            return true;
-        }
-
-        return false;
+        return result != -1;
     }
 
     private int search(int findNum, int midIndex, int[] sourceArr) {
