@@ -90,8 +90,8 @@ public class MergeSort {
             lowerArr[i - startIndex] = unsortedArr[i];
         }
 
-        for (int i = middleIndex+1; i <= endIndex; i++) {
-            higherArr[i - middleIndex -1] = unsortedArr[i];
+        for (int i = middleIndex + 1; i <= endIndex; i++) {
+            higherArr[i - middleIndex - 1] = unsortedArr[i];
         }
 
         int i = 0;
@@ -99,7 +99,7 @@ public class MergeSort {
         int k = startIndex;
         while (i < lowerArr.length && j < higherArr.length) {
 
-            if(lowerArr[i] < higherArr[j]) {
+            if (lowerArr[i] < higherArr[j]) {
                 unsortedArr[k] = lowerArr[i];
                 i++;
             } else {
