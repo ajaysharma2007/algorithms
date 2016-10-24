@@ -1,9 +1,5 @@
 package patternrecognition;
 
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdOut;
-
 import java.util.Arrays;
 
 /**
@@ -11,7 +7,8 @@ import java.util.Arrays;
  */
 public class FastCollinearPoints {
 
-    private static int numberOfSegments = 0;
+    private static final LineSegment[] NO_LINE_SEGMENT = {};
+    private int numberOfSegments = 0;
     private Point[] pointSet;
     private LineSegment[] collinearLineSegArr;
 
@@ -19,15 +16,23 @@ public class FastCollinearPoints {
         if (points == null) {
             throw new NullPointerException("Please supply the points.");
         }
-        for (Point point : points) {
+        pointSet = new Point[points.length];
+        for (int i = 0; i < points.length; i++) {
+            Point point = points[i];
             if (point == null) {
                 throw new NullPointerException("None of the " +
                         "supplied points can be null.");
             }
+            pointSet[i] = point;
         }
-        this.pointSet = points;
-        collinearLineSegArr = new LineSegment[pointSet.length];
-    }     // finds all line segments containing 4 or more points
+        Arrays.sort(pointSet);
+
+        for (int i = 1; i < pointSet.length; i++) {
+            if (pointSet[i - 1].compareTo(pointSet[i]) == 0) {
+                throw new IllegalArgumentException("Can't supply duplicate points.");
+            }
+        }
+    }
 
     private void resize(int capacity) {
         LineSegment[] newItemArr = new LineSegment[capacity];
@@ -38,61 +43,96 @@ public class FastCollinearPoints {
     }
 
     public int numberOfSegments() {
+        if (collinearLineSegArr == null) {
+            segments();
+        }
         return numberOfSegments;
     }
 
+    private boolean isSegAlreadyIncluded(int startPt, int currentPt) {
+        double currentPointSlope = pointSet[currentPt].slopeTo(pointSet[startPt]);
+        for (int j = 0; j < startPt; j++) {
+            if (pointSet[currentPt].slopeTo(pointSet[j]) == currentPointSlope) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public LineSegment[] segments() {
-        for (int k = 0; k < pointSet.length - 3; k++) {
-            Arrays.sort(pointSet);
-            Point point = pointSet[k];
-            Arrays.sort(pointSet, k + 1, pointSet.length, point.slopeOrder());
-            int i = k + 1;
 
-            boolean isContinue = false;
-            for (int j = 0; j < k; j++) {
-                if (point.slopeTo(pointSet[j]) == point.slopeTo(pointSet[i])) {
-                    isContinue = true;
-                    break;
+        if (collinearLineSegArr == null) {
+            collinearLineSegArr = new LineSegment[pointSet.length];
+            for (int k = 0; k < pointSet.length - 3; k++) {
+                if (k > 0) {
+                    Arrays.sort(pointSet);
                 }
-            }
+                Point point = pointSet[k];
 
-            if (isContinue) {
-                continue;
-            }
+                if (k < pointSet.length - 4) {
+                    Arrays.sort(pointSet, k + 1, pointSet.length,
+                            point.slopeOrder());
+                }
+                int i = k + 1;
 
-            while (i < pointSet.length - 2) {
-                if (point.slopeTo(pointSet[i]) ==
-                        point.slopeTo(pointSet[i + 1])
-                        &&
-                        point.slopeTo(pointSet[i]) ==
-                                point.slopeTo(pointSet[i + 2])) {
+                while (i < pointSet.length - 2) {
+                    double slope = point.slopeTo(pointSet[i]);
+                    if (slope ==
+                            point.slopeTo(pointSet[i + 1])
+                            &&
+                            slope ==
+                                    point.slopeTo(pointSet[i + 2])) {
 
-                    int count = i + 3;
-                    while (count < pointSet.length && point.slopeTo(pointSet[i]) ==
-                            point.slopeTo(pointSet[count])
-                            ) {
-                        count++;
+                        int lastPt = -1;
+
+                        if (i + 2 == pointSet.length - 1) {
+                            lastPt = i + 2;
+                        } else {
+
+                            int start = i + 2;
+                            int end = pointSet.length - 1;
+
+                            int mid;
+
+                            int low = start;
+                            int high = end;
+                            while (low <= high) {
+                                mid = low + ((high - low) / 2);
+                                double slopeMid = point.slopeTo(pointSet[mid]);
+                                if (slopeMid == slope) {
+                                    low = mid + 1;
+                                    lastPt = mid;
+                                } else {
+                                    high = mid - 1;
+                                    lastPt = mid - 1;
+                                }
+                            }
+                        }
+
+                        i = lastPt + 1;
+
+                        if (isSegAlreadyIncluded(k, lastPt)) {
+                            continue;
+                        }
+
+                        collinearLineSegArr[numberOfSegments++] =
+                                new LineSegment(pointSet[k], pointSet[lastPt]);
+
+
+                        if (numberOfSegments == collinearLineSegArr.length) {
+                            resize(2 * collinearLineSegArr.length);
+                        }
+
+                    } else {
+                        i++;
                     }
-
-                    collinearLineSegArr[numberOfSegments++] =
-                            new LineSegment(pointSet[k], pointSet[count - 1]);
-
-                    i = count;
-
-                    if (numberOfSegments == collinearLineSegArr.length) {
-                        resize(2 * collinearLineSegArr.length);
-                    }
-
-                } else {
-                    i++;
                 }
             }
         }
 
-        LineSegment[] finalCollinearLineSegs = null;
         int arrIndex = 0;
-        finalCollinearLineSegs = numberOfSegments == 0 ? null
-                : new LineSegment[numberOfSegments];
+        LineSegment[] finalCollinearLineSegs = numberOfSegments == 0
+                ? NO_LINE_SEGMENT : new LineSegment[numberOfSegments];
         for (LineSegment collinearLineSeg : collinearLineSegArr) {
             if (collinearLineSeg == null) {
                 break;
@@ -102,4 +142,5 @@ public class FastCollinearPoints {
 
         return finalCollinearLineSegs;
     }
+
 }

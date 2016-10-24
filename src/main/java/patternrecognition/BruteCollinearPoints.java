@@ -1,9 +1,5 @@
 package patternrecognition;
 
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdOut;
-
 import java.util.Arrays;
 
 /**
@@ -11,7 +7,8 @@ import java.util.Arrays;
  */
 public class BruteCollinearPoints {
 
-    private static int numberOfSegments = 0;
+    private static final LineSegment[] NO_LINE_SEGMENT = {};
+    private int numberOfSegments = 0;
     private Point[] pointSet;
     private LineSegment[] collinearLineSegArr;
 
@@ -19,14 +16,22 @@ public class BruteCollinearPoints {
         if (points == null) {
             throw new NullPointerException("Please supply the points.");
         }
-        for (Point point : points) {
+        pointSet = new Point[points.length];
+        for (int i = 0; i < points.length; i++) {
+            Point point = points[i];
             if (point == null) {
                 throw new NullPointerException("None of the " +
                         "supplied points can be null.");
             }
+            pointSet[i] = point;
         }
-        this.pointSet = points;
-        collinearLineSegArr = new LineSegment[pointSet.length];
+        Arrays.sort(pointSet);
+
+        for (int i = 1; i < pointSet.length; i++) {
+            if (pointSet[i - 1].compareTo(pointSet[i]) == 0) {
+                throw new IllegalArgumentException("Can't supply duplicate points.");
+            }
+        }
     }
 
     private void resize(int capacity) {
@@ -38,25 +43,33 @@ public class BruteCollinearPoints {
     }
 
     public int numberOfSegments() {
+        if (collinearLineSegArr == null) {
+            segments();
+        }
         return numberOfSegments;
     }
 
     public LineSegment[] segments() {
-        Arrays.sort(pointSet);
-        for (int i = 0; i < pointSet.length; i++) {
-            for (int j = i + 1; j < pointSet.length; j++) {
-                double slopeOneTwo = pointSet[i].slopeTo(pointSet[j]);
-                for (int k = j + 1; k < pointSet.length; k++) {
-                    double slopeTwoThree = pointSet[i].slopeTo(pointSet[k]);
-                    if (slopeOneTwo == slopeTwoThree) {
-                        for (int l = k + 1; l < pointSet.length; l++) {
-                            double slopeThreeFour = pointSet[k].slopeTo(pointSet[l]);
-                            if (slopeOneTwo == slopeThreeFour) {
-                                if (numberOfSegments == collinearLineSegArr.length) {
-                                    resize(2 * collinearLineSegArr.length);
+        if (collinearLineSegArr == null) {
+            collinearLineSegArr = new LineSegment[pointSet.length];
+            for (int i = 0; i < pointSet.length - 3; i++) {
+                for (int j = i + 1; j < pointSet.length - 2; j++) {
+                    double slopeOneTwo = pointSet[i].slopeTo(pointSet[j]);
+                    for (int k = j + 1; k < pointSet.length - 1; k++) {
+                        double slopeTwoThree = pointSet[i].slopeTo(pointSet[k]);
+                        if (slopeOneTwo == slopeTwoThree) {
+                            for (int l = k + 1; l < pointSet.length; l++) {
+                                double slopeThreeFour =
+                                        pointSet[k].slopeTo(pointSet[l]);
+                                if (slopeOneTwo == slopeThreeFour) {
+                                    collinearLineSegArr[numberOfSegments++] =
+                                            new LineSegment(pointSet[i],
+                                                    pointSet[l]);
+                                    if (numberOfSegments ==
+                                            collinearLineSegArr.length) {
+                                        resize(2 * collinearLineSegArr.length);
+                                    }
                                 }
-                                collinearLineSegArr[numberOfSegments++] =
-                                        new LineSegment(pointSet[i], pointSet[l]);
                             }
                         }
                     }
@@ -64,9 +77,9 @@ public class BruteCollinearPoints {
             }
         }
 
-        LineSegment[] finalCollinearLineSegs = null;
         int arrIndex = 0;
-        finalCollinearLineSegs = numberOfSegments == 0 ? null
+        LineSegment[] finalCollinearLineSegs = (numberOfSegments == 0)
+                ? NO_LINE_SEGMENT
                 : new LineSegment[numberOfSegments];
         for (LineSegment collinearLineSeg : collinearLineSegArr) {
             if (collinearLineSeg == null) {
