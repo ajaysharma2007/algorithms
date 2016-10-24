@@ -33,7 +33,7 @@ public class FastCollinearPoints {
 
         // read the n points from a file
         In in = new In("/Users/ajay/Downloads/Coursera/Algorithms Part I" +
-                "/Week-3/1-Merge Sort/Assignment/collinear/input6.txt");
+                "/Week-3/1-Merge Sort/Assignment/collinear/input20.txt");
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
@@ -75,13 +75,14 @@ public class FastCollinearPoints {
     public LineSegment[] segments() {
         for (int k = 0; k < pointSet.length - 3; k++) {
             Point point = pointSet[k];
-            Arrays.sort(pointSet, k + 1, pointSet.length - 1, point.slopeOrder());
+            Arrays.sort(pointSet, k + 1, pointSet.length, point.slopeOrder());
             int i = k + 1;
 
             boolean isContinue = false;
             for (int j = 0; j < k; j++) {
                 if (point.slopeTo(pointSet[j]) == point.slopeTo(pointSet[i])) {
                     isContinue = true;
+                    break;
                 }
             }
 
@@ -97,21 +98,23 @@ public class FastCollinearPoints {
                                 point.slopeTo(pointSet[i + 2])) {
 
                     int count = i + 3;
-                    while (point.slopeTo(pointSet[i]) ==
+                    while (count < pointSet.length && point.slopeTo(pointSet[i]) ==
                             point.slopeTo(pointSet[count])
-                            &&
-                            count < pointSet.length) {
+                            ) {
                         count++;
                     }
-                    i = count;
 
                     collinearLineSegArr[numberOfSegments++] =
-                            new LineSegment(pointSet[i], pointSet[--count]);
+                            new LineSegment(pointSet[k], pointSet[count - 1]);
+
+                    i = count;
 
                     if (numberOfSegments == collinearLineSegArr.length) {
                         resize(2 * collinearLineSegArr.length);
                     }
 
+                } else {
+                    i++;
                 }
             }
         }
