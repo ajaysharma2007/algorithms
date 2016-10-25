@@ -23,12 +23,6 @@ public class MergeSortCoursera {
         return v.compareTo(w) < 0;
     }
 
-    private static void swap(Comparable[] a, int i, int j) {
-        Comparable swap = a[i];
-        a[i] = a[j];
-        a[j] = swap;
-    }
-
     private void sort(Comparable[] a, Comparable[] aux, int lo, int hi) {
         if (hi <= lo) return;
         int mid = (lo + hi) / 2;
@@ -58,10 +52,10 @@ public class MergeSortCoursera {
                 sourceArray[k] = auxArr[j++];
             } else if (j > high) {
                 sourceArray[k] = auxArr[i++];
-            } else if (less(auxArr[i], auxArr[j])) {
-                sourceArray[k] = auxArr[i++];
-            } else {
+            } else if (less(auxArr[j], auxArr[i])) {
                 sourceArray[k] = auxArr[j++];
+            } else {
+                sourceArray[k] = auxArr[i++];
             }
         }
     }
