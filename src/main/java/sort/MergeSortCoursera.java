@@ -7,6 +7,7 @@ import java.util.Arrays;
  */
 public class MergeSortCoursera {
     private Integer[] sourceArr = new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1};
+    private int inversions = 0;
 
     public static void main(String[] args) {
 
@@ -16,6 +17,8 @@ public class MergeSortCoursera {
             System.out.print(sortedArrElem + ", ");
             return sortedArrElem;
         }).count();
+
+        System.out.println("Number of inversion is : " + mergeSortCoursera.inversions);
 
     }
 
@@ -53,6 +56,7 @@ public class MergeSortCoursera {
             } else if (j > high) {
                 sourceArray[k] = auxArr[i++];
             } else if (less(auxArr[j], auxArr[i])) {
+                inversions = inversions + (mid + 1 - i);
                 sourceArray[k] = auxArr[j++];
             } else {
                 sourceArray[k] = auxArr[i++];
