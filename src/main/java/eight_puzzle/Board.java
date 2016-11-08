@@ -1,5 +1,7 @@
 package eight_puzzle;
 
+import edu.princeton.cs.algs4.Queue;
+
 /**
  * Created by ajay on 11/7/16.
  */
@@ -7,7 +9,12 @@ public class Board {
 
     private char[] boardArrangement;
     private int hammingDist = 0;
-    private int manhattenDist = 0;
+    private int manhattanDist = 0;
+    private int blankIndex = -1;
+
+    private Board(char[] boardArrangement) {
+        this.boardArrangement = boardArrangement;
+    }
 
     public Board(int[][] blocks) {
         boardArrangement = new char[blocks.length * blocks.length];
@@ -17,6 +24,9 @@ public class Board {
             for (int blockEntry : block) {
                 int index = doubleToSingleIndex(rowIndex, columnIndex);
                 boardArrangement[index] = (char) blocks[rowIndex][columnIndex++];
+                if (blockEntry == 0) {
+                    blankIndex = index;
+                }
             }
 
             rowIndex++;
@@ -46,8 +56,8 @@ public class Board {
     }
 
     public int manhattan() {
-        if (manhattenDist != 0) {
-            return manhattenDist;
+        if (manhattanDist != 0) {
+            return manhattanDist;
         }
 
         for (int i = 0; i < boardArrangement.length; i++) {
@@ -59,33 +69,112 @@ public class Board {
                 int currentColIndex = i % dimension;
 
                 int correctRowIndex = (currentVal - 1) / dimension;
-                int correctColIndex = currentVal % dimension - 1;
+                int correctColIndex = (currentVal - 1) % dimension;
 
+                int rowDistance = Math.abs(currentRowIndex - correctRowIndex);
+                int colDistance = Math.abs(currentColIndex - correctColIndex);
+
+                manhattanDist = manhattanDist + rowDistance + colDistance;
             }
         }
+
+        return manhattanDist;
     }
 
     public boolean isGoal() {
-
-    }              // is this board the goal board?
+        hamming();
+        return hammingDist == 0;
+    }
 
     public Board twin() {
+        int arrLength = this.boardArrangement.length;
+        char[] twinBoard = new char[arrLength];
 
-    }               // a board that is obtained by exchanging any pair of blocks
+        for (int i = 0; i < arrLength; i++) {
+            twinBoard[i] = this.boardArrangement[i];
+        }
+
+        if (blankIndex - 2 >= 0) {
+            swapArrIndex(twinBoard, blankIndex - 1, blankIndex - 2);
+        } else if (blankIndex + 2 < arrLength) {
+            swapArrIndex(twinBoard, blankIndex + 1, blankIndex + 2);
+        }
+
+        return new Board(twinBoard);
+    }
+
+    private void swapArrIndex(char[] arr, int index1, int index2) {
+        char temp = arr[index1];
+        arr[index1] = arr[index2];
+        arr[index2] = temp;
+    }
 
     public boolean equals(Object y) {
-
-    }    // does this board equal y?
+        if (!(y instanceof Board)) {
+            throw new IllegalArgumentException("Object being " +
+                    "compared is of not type Board.");
+        }
+        return this.toString().equals(y.toString());
+    }
 
     public Iterable<Board> neighbors() {
+        Queue<Board> neighbours = new Queue<>();
+        int arrLength = this.boardArrangement.length;
+        int dimension = dimension();
+        char[] neighbourIndex = {(char) (blankIndex - 1), (char) (blankIndex + 1),
+                (char) (blankIndex - dimension), (char) (blankIndex + dimension)};
 
-    }  // all neighboring boards
+        for (char c : neighbourIndex) {
+            if ((int) c >= 0 && c < arrLength) {
+                char[] neighbourBoard = new char[arrLength];
+                for (int i = 0; i < arrLength; i++) {
+                    neighbourBoard[i] = this.boardArrangement[i];
+                }
+                swapArrIndex(neighbourBoard, c, blankIndex);
+                neighbours.enqueue(new Board(neighbourBoard));
+            }
+        }
+
+        return neighbours;
+    }
 
     public String toString() {
-
-    }          // string representation of this board (in the output format specified below)
+        StringBuilder s = new StringBuilder();
+        for (char aBoardArrangement : boardArrangement) {
+            s.append(String.format("%2d ", (int) aBoardArrangement));
+        }
+        return s.toString();
+    }
 
     public static void main(String[] args) {
+        int[][] testBoardArr = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
+        Board testBoard = new Board(testBoardArr);
 
-    } // unit tests (not graded)
+        System.out.print("Test board toString : ");
+        System.out.println(testBoard.toString());
+        System.out.println();
+
+        System.out.print("Dimension is : ");
+        System.out.println(testBoard.dimension());
+        System.out.println();
+
+        System.out.print("Hamming value is : ");
+        System.out.println(testBoard.hamming());
+        System.out.println();
+
+        System.out.print("Manhattan distance is : ");
+        System.out.println(testBoard.manhattan());
+        System.out.println();
+
+        System.out.print("Is this a goal board : ");
+        System.out.println(testBoard.isGoal());
+        System.out.println();
+
+        System.out.println("Neighbours : ");
+        for (Board neighbour : testBoard.neighbors()) {
+            System.out.println(neighbour.toString());
+        }
+        System.out.println();
+
+    }
 }
