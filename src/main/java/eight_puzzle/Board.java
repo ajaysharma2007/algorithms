@@ -178,4 +178,23 @@ public class Board {
         }
         return s.toString();
     }
+
+    int getInvCount() {
+        char[] arr = this.boardArrangement;
+        int inv_count = 0;
+        for (int i = 0; i < arr.length - 1; i++) {
+            if (arr[i] == 0) {
+                continue;
+            }
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[j] == 0) {
+                    continue;
+                }
+                if (arr[i] > arr[j]) {
+                    inv_count++;
+                }
+            }
+        }
+        return inv_count;
+    }
 }

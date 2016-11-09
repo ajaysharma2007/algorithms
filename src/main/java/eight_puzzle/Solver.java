@@ -52,7 +52,12 @@ public class Solver {
                     return 1;
                 } else if (o1.hamming() < o2.hamming()) {
                     return -1;
+                } else if (o1.manhattan() > o2.manhattan()) {
+                    return 1;
+                } else if (o1.manhattan() < o2.manhattan()) {
+                    return -1;
                 }
+
                 return 0;
             }
         };
@@ -63,8 +68,9 @@ public class Solver {
         moves = 0;
         solutionQueue = new Queue<>();
 
-        MinPQ<Board> boardQueue = new MinPQ<>(getBoardComparator());
-        MinPQ<Board> twinQueue = new MinPQ<>(getBoardComparator());
+        Comparator<Board> boardComparator = getBoardComparator();
+        MinPQ<Board> boardQueue = new MinPQ<>(boardComparator);
+        MinPQ<Board> twinQueue = new MinPQ<>(boardComparator);
 
         boardQueue.insert(this.initialBoard);
         twinQueue.insert(this.initialBoard.twin());
@@ -100,6 +106,8 @@ public class Solver {
             }
             preTwinBoard = smallestTwinBoard;
             smallestTwinBoard = twinQueue.delMin();
+            System.out.println(smallestTwinBoard);
+            System.out.println("Inversion count :   " + smallestTwinBoard.getInvCount());
 
         }
 
@@ -111,7 +119,6 @@ public class Solver {
 
         return true;
     }
-
 
     public int moves() {
         isSolvable();
