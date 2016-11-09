@@ -22,7 +22,7 @@ public class Solver {
     }
 
     public static void main(String[] args) {
-        In in = new In("/Users/ajay/Downloads/Coursera/Algorithms Part I/Week-4/1-Priority Queues/Assignment/8puzzle/puzzle3x3-unsolvable.txt");
+        In in = new In("/home/ajay/Downloads/algorithms/8puzzle/puzzle3x3-unsolvable.txt");
         int n = in.readInt();
         int[][] blocks = new int[n][n];
         for (int i = 0; i < n; i++)

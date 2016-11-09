@@ -147,7 +147,7 @@ public class Board {
             throw new IllegalArgumentException("Object being " +
                     "compared is of not type Board.");
         }
-        return y == null ? false : this.toString().equals(y.toString());
+        return y != null && this.toString().equals(y.toString());
     }
 
     public Iterable<Board> neighbors() {
