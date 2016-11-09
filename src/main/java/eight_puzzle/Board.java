@@ -12,8 +12,9 @@ public class Board {
     private int manhattanDist = 0;
     private int blankIndex = -1;
 
-    private Board(char[] boardArrangement) {
+    private Board(char[] boardArrangement, int blankIdx) {
         this.boardArrangement = boardArrangement;
+        this.blankIndex = blankIdx;
     }
 
     public Board(int[][] blocks) {
@@ -31,6 +32,38 @@ public class Board {
 
             rowIndex++;
         }
+    }
+
+    public static void main(String[] args) {
+        int[][] testBoardArr = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
+        Board testBoard = new Board(testBoardArr);
+
+        System.out.print("Test board toString : ");
+        System.out.println(testBoard.toString());
+        System.out.println();
+
+        System.out.print("Dimension is : ");
+        System.out.println(testBoard.dimension());
+        System.out.println();
+
+        System.out.print("Hamming value is : ");
+        System.out.println(testBoard.hamming());
+        System.out.println();
+
+        System.out.print("Manhattan distance is : ");
+        System.out.println(testBoard.manhattan());
+        System.out.println();
+
+        System.out.print("Is this a goal board : ");
+        System.out.println(testBoard.isGoal());
+        System.out.println();
+
+        System.out.println("Neighbours : ");
+        for (Board neighbour : testBoard.neighbors()) {
+            System.out.println(neighbour.toString());
+        }
+        System.out.println();
+
     }
 
     private int doubleToSingleIndex(int rowIndex, int columnIndex) {
@@ -100,7 +133,7 @@ public class Board {
             swapArrIndex(twinBoard, blankIndex + 1, blankIndex + 2);
         }
 
-        return new Board(twinBoard);
+        return new Board(twinBoard, blankIndex);
     }
 
     private void swapArrIndex(char[] arr, int index1, int index2) {
@@ -110,11 +143,11 @@ public class Board {
     }
 
     public boolean equals(Object y) {
-        if (!(y instanceof Board)) {
+        if (y != null && !(y instanceof Board)) {
             throw new IllegalArgumentException("Object being " +
                     "compared is of not type Board.");
         }
-        return this.toString().equals(y.toString());
+        return y == null ? false : this.toString().equals(y.toString());
     }
 
     public Iterable<Board> neighbors() {
@@ -131,7 +164,7 @@ public class Board {
                     neighbourBoard[i] = this.boardArrangement[i];
                 }
                 swapArrIndex(neighbourBoard, c, blankIndex);
-                neighbours.enqueue(new Board(neighbourBoard));
+                neighbours.enqueue(new Board(neighbourBoard, c));
             }
         }
 
@@ -144,37 +177,5 @@ public class Board {
             s.append(String.format("%2d ", (int) aBoardArrangement));
         }
         return s.toString();
-    }
-
-    public static void main(String[] args) {
-        int[][] testBoardArr = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
-        Board testBoard = new Board(testBoardArr);
-
-        System.out.print("Test board toString : ");
-        System.out.println(testBoard.toString());
-        System.out.println();
-
-        System.out.print("Dimension is : ");
-        System.out.println(testBoard.dimension());
-        System.out.println();
-
-        System.out.print("Hamming value is : ");
-        System.out.println(testBoard.hamming());
-        System.out.println();
-
-        System.out.print("Manhattan distance is : ");
-        System.out.println(testBoard.manhattan());
-        System.out.println();
-
-        System.out.print("Is this a goal board : ");
-        System.out.println(testBoard.isGoal());
-        System.out.println();
-
-        System.out.println("Neighbours : ");
-        for (Board neighbour : testBoard.neighbors()) {
-            System.out.println(neighbour.toString());
-        }
-        System.out.println();
-
     }
 }
