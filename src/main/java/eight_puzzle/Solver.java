@@ -5,13 +5,39 @@ import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.Comparator;
 import java.util.Iterator;
 
 /**
  * Created by ajay on 11/8/16.
  */
 public class Solver {
+
+    private class BoardInfo implements Comparable<BoardInfo> {
+        private int moves;
+        private Board board;
+        private Board prevBoard;
+
+        private BoardInfo(int noOfMoves, Board bestBoard, Board previousBoard) {
+            this.moves = noOfMoves;
+            this.board = bestBoard;
+            this.prevBoard = previousBoard;
+        }
+
+        @Override
+        public int compareTo(BoardInfo o) {
+            if (this.moves + this.board.hamming() > o.moves + o.board.hamming()) {
+                return 1;
+            } else if (this.moves + this.board.hamming() < o.moves + o.board.hamming()) {
+                return -1;
+            } else if (this.moves + this.board.manhattan() > o.moves + o.board.manhattan()) {
+                return 1;
+            } else if (this.moves + this.board.manhattan() < o.moves + o.board.manhattan()) {
+                return -1;
+            }
+
+            return 0;
+        }
+    }
 
     private Board initialBoard;
     private int moves = 0;
@@ -43,75 +69,46 @@ public class Solver {
         }
     }
 
-
-    private Comparator<Board> getBoardComparator() {
-        return new Comparator<Board>() {
-            @Override
-            public int compare(Board o1, Board o2) {
-                if (o1.hamming() > o2.hamming()) {
-                    return 1;
-                } else if (o1.hamming() < o2.hamming()) {
-                    return -1;
-                } else if (o1.manhattan() > o2.manhattan()) {
-                    return 1;
-                } else if (o1.manhattan() < o2.manhattan()) {
-                    return -1;
-                }
-
-                return 0;
-            }
-        };
-    }
-
     public boolean isSolvable() {
 
         moves = 0;
         solutionQueue = new Queue<>();
 
-        Comparator<Board> boardComparator = getBoardComparator();
-        MinPQ<Board> boardQueue = new MinPQ<>(boardComparator);
-        MinPQ<Board> twinQueue = new MinPQ<>(boardComparator);
+        MinPQ<BoardInfo> boardQueue = new MinPQ<>();
+        MinPQ<BoardInfo> twinQueue = new MinPQ<>();
 
-        boardQueue.insert(this.initialBoard);
-        twinQueue.insert(this.initialBoard.twin());
+        BoardInfo initialBoardInfo = new BoardInfo(this.moves, this.initialBoard, null);
 
-        Board smallestOrgBoard = boardQueue.delMin();
-        Board smallestTwinBoard = twinQueue.delMin();
+        BoardInfo twinBoardInfo = new BoardInfo(this.moves, this.initialBoard.twin(), null);
 
-        Board preOrgBoard = null;
-        Board preTwinBoard = null;
+        boardQueue.insert(initialBoardInfo);
+        twinQueue.insert(twinBoardInfo);
 
-        solutionQueue.enqueue(smallestOrgBoard);
+        BoardInfo smallestOrgBoardInfo = boardQueue.delMin();
+        BoardInfo smallestTwinBoardInfo = twinQueue.delMin();
 
-        while (!smallestOrgBoard.isGoal() && !smallestTwinBoard.isGoal()) {
+        solutionQueue.enqueue(smallestOrgBoardInfo.board);
 
-            Iterator<Board> orgIterator = smallestOrgBoard.neighbors().iterator();
-            while (orgIterator.hasNext()) {
-                Board neighbourBoard = orgIterator.next();
-                if (!neighbourBoard.equals(preOrgBoard)) {
-                    boardQueue.insert(neighbourBoard);
-                }
-            }
-            preOrgBoard = smallestOrgBoard;
-            smallestOrgBoard = boardQueue.delMin();
-            solutionQueue.enqueue(smallestOrgBoard);
+        while (!smallestOrgBoardInfo.board.isGoal() && !smallestTwinBoardInfo.board.isGoal()) {
+
             moves++;
-
-            Iterator<Board> twinIterator = smallestTwinBoard.neighbors().iterator();
-            while (twinIterator.hasNext()) {
-                Board neighbourBoard = twinIterator.next();
-                if (!neighbourBoard.equals(preTwinBoard)) {
-                    twinQueue.insert(neighbourBoard);
+            for (Board neighbourBoard : smallestOrgBoardInfo.board.neighbors()) {
+                if (!neighbourBoard.equals(smallestOrgBoardInfo.prevBoard)) {
+                    boardQueue.insert(new BoardInfo(this.moves, neighbourBoard, smallestOrgBoardInfo.board));
                 }
             }
-            preTwinBoard = smallestTwinBoard;
-            smallestTwinBoard = twinQueue.delMin();
-            System.out.println(smallestTwinBoard);
-            System.out.println("Inversion count :   " + smallestTwinBoard.getInvCount());
+            smallestOrgBoardInfo = boardQueue.delMin();
+            solutionQueue.enqueue(smallestOrgBoardInfo.board);
 
+            for (Board neighbourBoard : smallestTwinBoardInfo.board.neighbors()) {
+                if (!neighbourBoard.equals(smallestTwinBoardInfo.prevBoard)) {
+                    twinQueue.insert(new BoardInfo(this.moves, neighbourBoard, smallestTwinBoardInfo.board));
+                }
+            }
+            smallestTwinBoardInfo = twinQueue.delMin();
         }
 
-        if (smallestTwinBoard.isGoal()) {
+        if (smallestTwinBoardInfo.board.isGoal()) {
             moves = -1;
             solutionQueue = null;
             return false;
