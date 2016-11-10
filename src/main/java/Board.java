@@ -35,7 +35,7 @@ public class Board {
     }
 
     public static void main(String[] args) {
-        int[][] testBoardArr = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
+        int[][] testBoardArr = {{5, 0, 4}, {2, 3, 8}, {7, 1, 6}};
         Board testBoard = new Board(testBoardArr);
 
         System.out.print("Test board toString : ");
@@ -161,7 +161,7 @@ public class Board {
                 blankIndex - dimension, blankIndex + dimension};
 
         for (int c : neighbourIndex) {
-            if (c > 0 && c < arrLength) {
+            if (c >= 0 && c < arrLength) {
                 char[] neighbourBoard = new char[arrLength];
                 for (int i = 0; i < arrLength; i++) {
                     neighbourBoard[i] = this.boardArrangement[i];
