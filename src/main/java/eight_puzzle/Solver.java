@@ -5,8 +5,6 @@ import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.Iterator;
-
 /**
  * Created by ajay on 11/8/16.
  */
