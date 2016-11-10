@@ -11,6 +11,8 @@ public class Board {
     private int hammingDist = 0;
     private int manhattanDist = 0;
     private int blankIndex = -1;
+    private Board twin;
+    private Queue<Board> neighbours;
 
     private Board(char[] boardArrangement, int blankIdx) {
         this.boardArrangement = boardArrangement;
@@ -120,6 +122,9 @@ public class Board {
     }
 
     public Board twin() {
+        if (twin != null) {
+            return this.twin;
+        }
         int arrLength = this.boardArrangement.length;
         char[] twinBoard = new char[arrLength];
 
@@ -133,7 +138,7 @@ public class Board {
             swapArrIndex(twinBoard, blankIndex + 1, blankIndex + 2);
         }
 
-        return new Board(twinBoard, blankIndex);
+        return twin = new Board(twinBoard, blankIndex);
     }
 
     private void swapArrIndex(char[] arr, int index1, int index2) {
@@ -151,7 +156,10 @@ public class Board {
     }
 
     public Iterable<Board> neighbors() {
-        Queue<Board> neighbours = new Queue<>();
+        if (neighbours != null) {
+            return this.neighbours;
+        }
+        neighbours = new Queue<>();
         int arrLength = this.boardArrangement.length;
         int dimension = dimension();
         char[] neighbourIndex = {(char) (blankIndex - 1), (char) (blankIndex + 1),

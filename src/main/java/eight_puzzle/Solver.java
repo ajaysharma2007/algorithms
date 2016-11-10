@@ -25,11 +25,14 @@ public class Solver {
         public int compareTo(BoardInfo o) {
             if (this.moves + this.board.hamming() > o.moves + o.board.hamming()) {
                 return 1;
-            } else if (this.moves + this.board.hamming() < o.moves + o.board.hamming()) {
+            } else if (this.moves + this.board.hamming()
+                    < o.moves + o.board.hamming()) {
                 return -1;
-            } else if (this.moves + this.board.manhattan() > o.moves + o.board.manhattan()) {
+            } else if (this.moves + this.board.manhattan()
+                    > o.moves + o.board.manhattan()) {
                 return 1;
-            } else if (this.moves + this.board.manhattan() < o.moves + o.board.manhattan()) {
+            } else if (this.moves + this.board.manhattan()
+                    < o.moves + o.board.manhattan()) {
                 return -1;
             }
 
@@ -46,7 +49,7 @@ public class Solver {
     }
 
     public static void main(String[] args) {
-        In in = new In("/home/ajay/Downloads/algorithms/8puzzle/puzzle3x3-unsolvable.txt");
+        In in = new In("/home/ajay/Downloads/algorithms/8puzzle/puzzle04.txt");
         int n = in.readInt();
         int[][] blocks = new int[n][n];
         for (int i = 0; i < n; i++)
@@ -69,15 +72,20 @@ public class Solver {
 
     public boolean isSolvable() {
 
+        if (solutionQueue != null) {
+            return true;
+        }
         moves = 0;
         solutionQueue = new Queue<>();
 
         MinPQ<BoardInfo> boardQueue = new MinPQ<>();
         MinPQ<BoardInfo> twinQueue = new MinPQ<>();
 
-        BoardInfo initialBoardInfo = new BoardInfo(this.moves, this.initialBoard, null);
+        BoardInfo initialBoardInfo =
+                new BoardInfo(this.moves, this.initialBoard, null);
 
-        BoardInfo twinBoardInfo = new BoardInfo(this.moves, this.initialBoard.twin(), null);
+        BoardInfo twinBoardInfo =
+                new BoardInfo(this.moves, this.initialBoard.twin(), null);
 
         boardQueue.insert(initialBoardInfo);
         twinQueue.insert(twinBoardInfo);
@@ -87,12 +95,14 @@ public class Solver {
 
         solutionQueue.enqueue(smallestOrgBoardInfo.board);
 
-        while (!smallestOrgBoardInfo.board.isGoal() && !smallestTwinBoardInfo.board.isGoal()) {
+        while (!smallestOrgBoardInfo.board.isGoal()
+                && !smallestTwinBoardInfo.board.isGoal()) {
 
             moves++;
             for (Board neighbourBoard : smallestOrgBoardInfo.board.neighbors()) {
                 if (!neighbourBoard.equals(smallestOrgBoardInfo.prevBoard)) {
-                    boardQueue.insert(new BoardInfo(this.moves, neighbourBoard, smallestOrgBoardInfo.board));
+                    boardQueue.insert(new BoardInfo(
+                            this.moves, neighbourBoard, smallestOrgBoardInfo.board));
                 }
             }
             smallestOrgBoardInfo = boardQueue.delMin();
@@ -100,7 +110,8 @@ public class Solver {
 
             for (Board neighbourBoard : smallestTwinBoardInfo.board.neighbors()) {
                 if (!neighbourBoard.equals(smallestTwinBoardInfo.prevBoard)) {
-                    twinQueue.insert(new BoardInfo(this.moves, neighbourBoard, smallestTwinBoardInfo.board));
+                    twinQueue.insert(new BoardInfo(
+                            this.moves, neighbourBoard, smallestTwinBoardInfo.board));
                 }
             }
             smallestTwinBoardInfo = twinQueue.delMin();
@@ -116,14 +127,17 @@ public class Solver {
     }
 
     public int moves() {
-        isSolvable();
-        return moves;
+        if (solutionQueue != null) {
+            return moves;
+        }
+        return -1;
     }
 
     public Iterable<Board> solution() {
-        if (isSolvable()) {
-            return solutionQueue;
+
+        if (solutionQueue == null) {
+            isSolvable();
         }
-        return null;
+        return solutionQueue;
     }
 }
