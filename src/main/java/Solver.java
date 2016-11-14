@@ -9,42 +9,7 @@ import edu.princeton.cs.algs4.StdOut;
 public class Solver {
 
     private Board initialBoard;
-    private Queue<Board> solutionQueue;
     private BoardInfo resultBoardInfo;
-
-    private static class BoardInfo implements Comparable<BoardInfo> {
-        private int moves;
-        private Board board;
-        private Board prevBoard;
-
-        private BoardInfo(int noOfMoves, Board bestBoard, Board previousBoard) {
-            this.moves = noOfMoves;
-            this.board = bestBoard;
-            this.prevBoard = previousBoard;
-        }
-
-        @Override
-        public int compareTo(BoardInfo o) {
-            int thisHamming = this.board.hamming();
-            int thisManhattan = this.board.manhattan();
-            int oHamming = o.board.hamming();
-            int oManhattan = o.board.hamming();
-            if (this.moves + thisHamming > o.moves + oHamming) {
-                return 1;
-            } else if (this.moves + thisHamming
-                    < o.moves + oHamming) {
-                return -1;
-            } else if (this.moves + thisManhattan
-                    > o.moves + oManhattan) {
-                return 1;
-            } else if (this.moves + thisManhattan
-                    < o.moves + oManhattan) {
-                return -1;
-            }
-
-            return 0;
-        }
-    }
 
     public Solver(Board initial) {
         if (initial == null) {
@@ -76,12 +41,17 @@ public class Solver {
         }
     }
 
+    private void copyQueue(Queue<Board> source, Queue<Board> dest) {
+        for (Board sourceBoardItem : source) {
+            dest.enqueue(sourceBoardItem);
+        }
+    }
+
     public boolean isSolvable() {
 
-        if (solutionQueue != null) {
+        if (resultBoardInfo != null) {
             return true;
         }
-        solutionQueue = new Queue<>();
 
         MinPQ<BoardInfo> boardQueue = new MinPQ<>();
         MinPQ<BoardInfo> twinQueue = new MinPQ<>();
@@ -89,8 +59,9 @@ public class Solver {
         BoardInfo initialBoardInfo =
                 new BoardInfo(0, this.initialBoard, null);
 
+        Board twinBoard = this.initialBoard.twin();
         BoardInfo twinBoardInfo =
-                new BoardInfo(0, this.initialBoard.twin(), null);
+                new BoardInfo(0, twinBoard, null);
 
         boardQueue.insert(initialBoardInfo);
         twinQueue.insert(twinBoardInfo);
@@ -98,7 +69,9 @@ public class Solver {
         BoardInfo smallestOrgBoardInfo = boardQueue.delMin();
         BoardInfo smallestTwinBoardInfo = twinQueue.delMin();
 
-        solutionQueue.enqueue(smallestOrgBoardInfo.board);
+        smallestOrgBoardInfo.solution = new Queue<>();
+        smallestOrgBoardInfo.solution.enqueue(smallestOrgBoardInfo.board);
+
         resultBoardInfo = smallestOrgBoardInfo;
 
         while (true) {
@@ -107,25 +80,32 @@ public class Solver {
             }
             if (smallestTwinBoardInfo.board.isGoal()) {
                 resultBoardInfo.moves = -1;
-                solutionQueue = null;
+                resultBoardInfo.solution = null;
                 return false;
             }
             for (Board neighbourBoard : smallestOrgBoardInfo.board.neighbors()) {
-                if (!neighbourBoard.equals(smallestOrgBoardInfo.prevBoard)) {
+                if (!neighbourBoard.equals(
+                        smallestOrgBoardInfo.prevBoardInfo.board)) {
                     boardQueue.insert(new BoardInfo(
-                            smallestOrgBoardInfo.moves + 1, neighbourBoard, smallestOrgBoardInfo.board));
+                            smallestOrgBoardInfo.moves + 1,
+                            neighbourBoard, smallestOrgBoardInfo));
                 }
             }
             smallestOrgBoardInfo = boardQueue.delMin();
-            solutionQueue.enqueue(smallestOrgBoardInfo.board);
+            smallestOrgBoardInfo.solution = new Queue<>();
+            copyQueue(smallestOrgBoardInfo.prevBoardInfo.solution,
+                    smallestOrgBoardInfo.solution);
+            smallestOrgBoardInfo.solution.enqueue(smallestOrgBoardInfo.board);
+
             resultBoardInfo = smallestOrgBoardInfo;
 
             for (Board neighbourBoard : smallestTwinBoardInfo.board.neighbors()) {
-                if (!neighbourBoard.equals(smallestTwinBoardInfo.prevBoard)) {
+                if (!neighbourBoard.equals(
+                        smallestTwinBoardInfo.prevBoardInfo.board)) {
                     twinQueue.insert(new BoardInfo(
                             smallestTwinBoardInfo.moves + 1,
                             neighbourBoard,
-                            smallestTwinBoardInfo.board));
+                            smallestTwinBoardInfo));
                 }
             }
             smallestTwinBoardInfo = twinQueue.delMin();
@@ -133,7 +113,7 @@ public class Solver {
     }
 
     public int moves() {
-        if (solutionQueue == null) {
+        if (resultBoardInfo == null) {
             isSolvable();
         }
         return resultBoardInfo.moves;
@@ -141,9 +121,45 @@ public class Solver {
 
     public Iterable<Board> solution() {
 
-        if (solutionQueue == null) {
+        if (resultBoardInfo == null) {
             isSolvable();
         }
-        return solutionQueue;
+        return resultBoardInfo.solution;
+    }
+
+    private static class BoardInfo implements Comparable<BoardInfo> {
+        private int moves;
+        private Board board;
+        private BoardInfo prevBoardInfo;
+        private Queue<Board> solution;
+
+        private BoardInfo(int noOfMoves, Board bestBoard,
+                          BoardInfo previousBoardInfo) {
+            this.moves = noOfMoves;
+            this.board = bestBoard;
+            this.prevBoardInfo = previousBoardInfo;
+        }
+
+        @Override
+        public int compareTo(BoardInfo o) {
+            int thisHamming = this.board.hamming();
+            int thisManhattan = this.board.manhattan();
+            int oHamming = o.board.hamming();
+            int oManhattan = o.board.hamming();
+            if (this.moves + thisHamming > o.moves + oHamming) {
+                return 1;
+            } else if (this.moves + thisHamming
+                    < o.moves + oHamming) {
+                return -1;
+            } else if (this.moves + thisManhattan
+                    > o.moves + oManhattan) {
+                return 1;
+            } else if (this.moves + thisManhattan
+                    < o.moves + oManhattan) {
+                return -1;
+            }
+
+            return 0;
+        }
     }
 }

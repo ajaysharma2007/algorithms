@@ -35,7 +35,8 @@ public class Board {
     }
 
     public static void main(String[] args) {
-        int[][] testBoardArr = {{5, 0, 4}, {2, 3, 8}, {7, 1, 6}};
+//        int[][] testBoardArr = {{5, 0, 4}, {2, 3, 8}, {7, 1, 6}};
+        int[][] testBoardArr = {{1, 0}, {2, 3}};
         Board testBoard = new Board(testBoardArr);
 
         System.out.print("Test board toString : ");
