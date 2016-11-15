@@ -20,7 +20,7 @@ public class Solver {
 
     public static void main(String[] args) {
         In in = new In("/home/ajay/Downloads/algorithms/8puzzle/" +
-                "puzzle03.txt");
+                "puzzle3x3-unsolvable1.txt");
         int n = in.readInt();
         int[][] blocks = new int[n][n];
         for (int i = 0; i < n; i++)
@@ -28,17 +28,26 @@ public class Solver {
                 blocks[i][j] = in.readInt();
         Board initial = new Board(blocks);
 
-        // solve the puzzle
         Solver solver = new Solver(initial);
+        System.out.println(solver.isSolvable());
+        System.out.println(solver.solution());
+        System.out.println(solver.moves());
+        System.out.println(solver.moves());
+        System.out.println(solver.solution());
+        System.out.println(solver.moves());
+        System.out.println(solver.isSolvable());
 
-        // print solution to standard output
-        if (!solver.isSolvable())
-            StdOut.println("No solution possible");
-        else {
-            StdOut.println("Minimum number of moves = " + solver.moves());
-            for (Board board : solver.solution())
-                StdOut.println(board);
-        }
+//        // solve the puzzle
+//        Solver solver = new Solver(initial);
+//
+//        // print solution to standard output
+//        if (!solver.isSolvable())
+//            StdOut.println("No solution possible");
+//        else {
+//            StdOut.println("Minimum number of moves = " + solver.moves());
+//            for (Board board : solver.solution())
+//                StdOut.println(board);
+//        }
     }
 
     private void copyQueue(Queue<Board> source, Queue<Board> dest) {
@@ -49,7 +58,7 @@ public class Solver {
 
     public boolean isSolvable() {
 
-        if (resultBoardInfo != null) {
+        if (resultBoardInfo != null && resultBoardInfo.moves != -1) {
             return true;
         }
 
