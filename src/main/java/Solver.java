@@ -28,26 +28,17 @@ public class Solver {
                 blocks[i][j] = in.readInt();
         Board initial = new Board(blocks);
 
+        // solve the puzzle
         Solver solver = new Solver(initial);
-        System.out.println(solver.isSolvable());
-        System.out.println(solver.solution());
-        System.out.println(solver.moves());
-        System.out.println(solver.moves());
-        System.out.println(solver.solution());
-        System.out.println(solver.moves());
-        System.out.println(solver.isSolvable());
 
-//        // solve the puzzle
-//        Solver solver = new Solver(initial);
-//
-//        // print solution to standard output
-//        if (!solver.isSolvable())
-//            StdOut.println("No solution possible");
-//        else {
-//            StdOut.println("Minimum number of moves = " + solver.moves());
-//            for (Board board : solver.solution())
-//                StdOut.println(board);
-//        }
+        // print solution to standard output
+        if (!solver.isSolvable())
+            StdOut.println("No solution possible");
+        else {
+            StdOut.println("Minimum number of moves = " + solver.moves());
+            for (Board board : solver.solution())
+                StdOut.println(board);
+        }
     }
 
     private void copyQueue(Queue<Board> source, Queue<Board> dest) {
@@ -66,11 +57,14 @@ public class Solver {
         MinPQ<BoardInfo> twinQueue = new MinPQ<>();
 
         BoardInfo initialBoardInfo =
-                new BoardInfo(0, this.initialBoard, new BoardInfo(-1, null, null));
+                new BoardInfo(0, this.initialBoard,
+                        new BoardInfo(-1, null, null, -1),
+                        this.initialBoard.hamming());
 
         Board twinBoard = this.initialBoard.twin();
         BoardInfo twinBoardInfo =
-                new BoardInfo(0, twinBoard, new BoardInfo(-1, null, null));
+                new BoardInfo(0, twinBoard, new BoardInfo(-1, null, null, -1),
+                        twinBoard.hamming());
 
         boardQueue.insert(initialBoardInfo);
         twinQueue.insert(twinBoardInfo);
@@ -97,7 +91,8 @@ public class Solver {
                         smallestOrgBoardInfo.prevBoardInfo.board)) {
                     boardQueue.insert(new BoardInfo(
                             smallestOrgBoardInfo.moves + 1,
-                            neighbourBoard, smallestOrgBoardInfo));
+                            neighbourBoard, smallestOrgBoardInfo,
+                            neighbourBoard.hamming()));
                 }
             }
             smallestOrgBoardInfo = boardQueue.delMin();
@@ -114,7 +109,7 @@ public class Solver {
                     twinQueue.insert(new BoardInfo(
                             smallestTwinBoardInfo.moves + 1,
                             neighbourBoard,
-                            smallestTwinBoardInfo));
+                            smallestTwinBoardInfo, neighbourBoard.hamming()));
                 }
             }
             smallestTwinBoardInfo = twinQueue.delMin();
@@ -141,33 +136,24 @@ public class Solver {
         private Board board;
         private BoardInfo prevBoardInfo;
         private Queue<Board> solution;
+        private int hamming = 0;
 
         private BoardInfo(int noOfMoves, Board bestBoard,
-                          BoardInfo previousBoardInfo) {
+                          BoardInfo previousBoardInfo, int hammingDist) {
             this.moves = noOfMoves;
             this.board = bestBoard;
             this.prevBoardInfo = previousBoardInfo;
+            this.hamming = hammingDist;
         }
 
         @Override
         public int compareTo(BoardInfo o) {
-            int thisHamming = this.board.hamming();
-            int thisManhattan = this.board.manhattan();
-            int oHamming = o.board.hamming();
-            int oManhattan = o.board.hamming();
-            if (this.moves + thisHamming > o.moves + oHamming) {
+            if (this.moves + this.hamming > o.moves + o.hamming) {
                 return 1;
-            } else if (this.moves + thisHamming
-                    < o.moves + oHamming) {
-                return -1;
-            } else if (this.moves + thisManhattan
-                    > o.moves + oManhattan) {
-                return 1;
-            } else if (this.moves + thisManhattan
-                    < o.moves + oManhattan) {
+            } else if (this.moves + this.hamming
+                    < o.moves + o.hamming) {
                 return -1;
             }
-
             return 0;
         }
     }
