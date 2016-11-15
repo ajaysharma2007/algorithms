@@ -20,7 +20,7 @@ public class Solver {
 
     public static void main(String[] args) {
         In in = new In("/home/ajay/Downloads/algorithms/8puzzle/" +
-                "puzzle07.txt");
+                "puzzle03.txt");
         int n = in.readInt();
         int[][] blocks = new int[n][n];
         for (int i = 0; i < n; i++)
@@ -57,11 +57,11 @@ public class Solver {
         MinPQ<BoardInfo> twinQueue = new MinPQ<>();
 
         BoardInfo initialBoardInfo =
-                new BoardInfo(0, this.initialBoard, null);
+                new BoardInfo(0, this.initialBoard, new BoardInfo(-1, null, null));
 
         Board twinBoard = this.initialBoard.twin();
         BoardInfo twinBoardInfo =
-                new BoardInfo(0, twinBoard, null);
+                new BoardInfo(0, twinBoard, new BoardInfo(-1, null, null));
 
         boardQueue.insert(initialBoardInfo);
         twinQueue.insert(twinBoardInfo);

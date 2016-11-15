@@ -32,11 +32,15 @@ public class Board {
 
             rowIndex++;
         }
+
+        if (blankIndex == -1) {
+            throw new IllegalArgumentException("Not a valid board.");
+        }
     }
 
     public static void main(String[] args) {
-//        int[][] testBoardArr = {{5, 0, 4}, {2, 3, 8}, {7, 1, 6}};
-        int[][] testBoardArr = {{1, 0}, {2, 3}};
+//        int[][] testBoardArr = {{8, 7, 3}, {5, 4, 1}, {0, 6, 2}};
+        int[][] testBoardArr = {{2, 0}, {1, 3}};
         Board testBoard = new Board(testBoardArr);
 
         System.out.print("Test board toString : ");
@@ -158,8 +162,16 @@ public class Board {
         neighbours = new Queue<>();
         int arrLength = this.boardArrangement.length;
         int dimension = dimension();
-        int[] neighbourIndex = {blankIndex - 1, blankIndex + 1,
-                blankIndex - dimension, blankIndex + dimension};
+        int[] neighbourIndex = {-1, -1, -1, -1};
+        int index = 0;
+        if ((blankIndex - 1) / dimension == blankIndex / dimension) {
+            neighbourIndex[index++] = blankIndex - 1;
+        }
+        if ((blankIndex + 1) / dimension == blankIndex / dimension) {
+            neighbourIndex[index++] = blankIndex + 1;
+        }
+        neighbourIndex[index++] = blankIndex + dimension;
+        neighbourIndex[index++] = blankIndex - dimension;
 
         for (int c : neighbourIndex) {
             if (c >= 0 && c < arrLength) {
