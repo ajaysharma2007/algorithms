@@ -28,8 +28,8 @@ public class Solver {
 
         BoardInfo initialBoardInfo =
                 new BoardInfo(0, this.initialBoard,
-                        new BoardInfo(-1, null, null, -1),
-                        this.initialBoard.hamming());
+                        new BoardInfo(-1, null, null, -1, -1),
+                        this.initialBoard.hamming(), this.initialBoard.manhattan());
 
         BoardInfo smallestOrgBoardInfo = initialBoardInfo;
         resultBoardInfo = smallestOrgBoardInfo;
@@ -39,8 +39,8 @@ public class Solver {
 
         Board twinBoard = this.initialBoard.twin();
         BoardInfo twinBoardInfo =
-                new BoardInfo(0, twinBoard, new BoardInfo(-1, null, null, -1),
-                        twinBoard.hamming());
+                new BoardInfo(0, twinBoard, new BoardInfo(-1, null, null, -1, -1),
+                        twinBoard.hamming(), this.initialBoard.manhattan());
         BoardInfo smallestTwinBoardInfo = twinBoardInfo;
 
         if (smallestTwinBoardInfo.board.isGoal()) {
@@ -57,7 +57,7 @@ public class Solver {
                     boardQueue.insert(new BoardInfo(
                             smallestOrgBoardInfo.moves + 1,
                             neighbourBoard, smallestOrgBoardInfo,
-                            neighbourBoard.hamming()));
+                            neighbourBoard.hamming(), neighbourBoard.manhattan()));
                 }
             }
             smallestOrgBoardInfo = boardQueue.delMin();
@@ -72,7 +72,9 @@ public class Solver {
                     twinQueue.insert(new BoardInfo(
                             smallestTwinBoardInfo.moves + 1,
                             neighbourBoard,
-                            smallestTwinBoardInfo, neighbourBoard.hamming()));
+                            smallestTwinBoardInfo,
+                            neighbourBoard.hamming(),
+                            neighbourBoard.manhattan()));
                 }
             }
             smallestTwinBoardInfo = twinQueue.delMin();
@@ -117,13 +119,16 @@ public class Solver {
         private Board board;
         private BoardInfo prevBoardInfo;
         private int hamming = 0;
+        private int manhattan = 0;
 
         private BoardInfo(int noOfMoves, Board bestBoard,
-                          BoardInfo previousBoardInfo, int hammingDist) {
+                          BoardInfo previousBoardInfo,
+                          int hammingDist, int manhattanDist) {
             this.moves = noOfMoves;
             this.board = bestBoard;
             this.prevBoardInfo = previousBoardInfo;
             this.hamming = hammingDist;
+            this.manhattan = manhattanDist;
         }
 
         @Override
@@ -132,6 +137,11 @@ public class Solver {
                 return 1;
             } else if (this.moves + this.hamming
                     < o.moves + o.hamming) {
+                return -1;
+            } else if (this.moves + this.manhattan > o.moves + o.manhattan) {
+                return 1;
+            } else if (this.moves + this.manhattan
+                    < o.moves + o.manhattan) {
                 return -1;
             }
             return 0;

@@ -11,6 +11,7 @@ public class Board {
     private int blankIndex = -1;
     private Board twin;
     private Queue<Board> neighbours;
+    private int dimension = -1;
 
     private Board(char[] boardArrangement, int blankIdx) {
         this.boardArrangement = boardArrangement;
@@ -76,6 +77,9 @@ public class Board {
     }
 
     public int dimension() {
+        if (dimension != -1) {
+            return dimension;
+        }
         return (int) Math.sqrt(boardArrangement.length);
     }
 
