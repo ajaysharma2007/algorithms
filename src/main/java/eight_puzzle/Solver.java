@@ -1,3 +1,6 @@
+package eight_puzzle;
+
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Stack;
 
@@ -5,17 +8,32 @@ import edu.princeton.cs.algs4.Stack;
  * Created by ajay on 11/8/16.
  */
 public class Solver {
-
     private Board initialBoard;
     private BoardInfo resultBoardInfo;
 
     public Solver(Board initial) {
         if (initial == null) {
-            throw new NullPointerException("Board can't be null.");
+            throw new NullPointerException("eight_puzzle.Board can't be null.");
         }
         this.initialBoard = initial;
+        isSolvable();
     }
 
+    public static void main(String[] args) {
+        In in = new In("/home/ajay/Downloads/algorithms/8puzzle/" +
+                "puzzle31.txt");
+        int n = in.readInt();
+        int[][] blocks = new int[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                blocks[i][j] = in.readInt();
+        Board initial = new Board(blocks);
+
+        long time1 = System.currentTimeMillis();
+        Solver solver = new Solver(initial);
+        System.out.println(solver.moves());
+        System.out.println(System.currentTimeMillis() - time1);
+    }
 
     public boolean isSolvable() {
 
@@ -33,6 +51,7 @@ public class Solver {
 
         BoardInfo smallestOrgBoardInfo = initialBoardInfo;
         resultBoardInfo = smallestOrgBoardInfo;
+
         if (resultBoardInfo.board.isGoal()) {
             return true;
         }
@@ -43,14 +62,16 @@ public class Solver {
                         twinBoard.hamming(), this.initialBoard.manhattan());
         BoardInfo smallestTwinBoardInfo = twinBoardInfo;
 
-        if (smallestTwinBoardInfo.board.isGoal()) {
-            resultBoardInfo.moves = -1;
-            resultBoardInfo.board = null;
-            resultBoardInfo.prevBoardInfo = null;
-            return false;
-        }
 
         while (true) {
+
+            if (smallestTwinBoardInfo.board.isGoal()) {
+                resultBoardInfo.moves = -1;
+                resultBoardInfo.board = null;
+                resultBoardInfo.prevBoardInfo = null;
+                return false;
+            }
+
             for (Board neighbourBoard : smallestOrgBoardInfo.board.neighbors()) {
                 if (!neighbourBoard.equals(
                         smallestOrgBoardInfo.prevBoardInfo.board)) {
@@ -61,6 +82,7 @@ public class Solver {
                 }
             }
             smallestOrgBoardInfo = boardQueue.delMin();
+
             resultBoardInfo = smallestOrgBoardInfo;
             if (resultBoardInfo.board.isGoal()) {
                 return true;
@@ -78,12 +100,6 @@ public class Solver {
                 }
             }
             smallestTwinBoardInfo = twinQueue.delMin();
-            if (smallestTwinBoardInfo.board.isGoal()) {
-                resultBoardInfo.moves = -1;
-                resultBoardInfo.board = null;
-                resultBoardInfo.prevBoardInfo = null;
-                return false;
-            }
         }
     }
 
@@ -133,15 +149,15 @@ public class Solver {
 
         @Override
         public int compareTo(BoardInfo o) {
-            if (this.moves + this.hamming > o.moves + o.hamming) {
-                return 1;
-            } else if (this.moves + this.hamming
-                    < o.moves + o.hamming) {
-                return -1;
-            } else if (this.moves + this.manhattan > o.moves + o.manhattan) {
+            if (this.moves + this.manhattan > o.moves + o.manhattan) {
                 return 1;
             } else if (this.moves + this.manhattan
                     < o.moves + o.manhattan) {
+                return -1;
+            } else if (this.moves + this.hamming > o.moves + o.hamming) {
+                return 1;
+            } else if (this.moves + this.hamming
+                    < o.moves + o.hamming) {
                 return -1;
             }
             return 0;

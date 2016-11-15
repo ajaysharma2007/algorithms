@@ -1,3 +1,5 @@
+package eight_puzzle;
+
 import edu.princeton.cs.algs4.Queue;
 
 /**
@@ -40,7 +42,8 @@ public class Board {
     }
 
     public static void main(String[] args) {
-//        int[][] testBoardArr = {{8, 7, 3}, {5, 4, 1}, {0, 6, 2}};
+        int[][] testBoardArr1 = {{8, 7, 3}, {5, 4, 1}, {0, 6, 2}};
+        int[][] testBoardArr2 = {{8, 7, 3}, {5, 4, 1}, {0, 6, 2}};
         int[][] testBoardArr = {{2, 0}, {1, 3}};
         Board testBoard = new Board(testBoardArr);
 
@@ -70,6 +73,8 @@ public class Board {
         }
         System.out.println();
 
+        System.out.println(new Board(testBoardArr2).equals(new Board(testBoardArr1)));
+
     }
 
     private int doubleToSingleIndex(int rowIndex, int columnIndex) {
@@ -80,7 +85,8 @@ public class Board {
         if (dimension != -1) {
             return dimension;
         }
-        return (int) Math.sqrt(boardArrangement.length);
+        dimension = (int) Math.sqrt(boardArrangement.length);
+        return dimension;
     }
 
     public int hamming() {
@@ -105,13 +111,13 @@ public class Board {
         for (int i = 0; i < boardArrangement.length; i++) {
             if (boardArrangement[i] != 0) {
                 int currentVal = boardArrangement[i];
-                int dimension = dimension();
+                int dim = dimension();
 
-                int currentRowIndex = i / dimension;
-                int currentColIndex = i % dimension;
+                int currentRowIndex = i / dim;
+                int currentColIndex = i % dim;
 
-                int correctRowIndex = (currentVal - 1) / dimension;
-                int correctColIndex = (currentVal - 1) % dimension;
+                int correctRowIndex = (currentVal - 1) / dim;
+                int correctColIndex = (currentVal - 1) % dim;
 
                 int rowDistance = Math.abs(currentRowIndex - correctRowIndex);
                 int colDistance = Math.abs(currentColIndex - correctColIndex);
@@ -156,7 +162,16 @@ public class Board {
     }
 
     public boolean equals(Object y) {
-        return y != null && this.toString().equals(y.toString());
+        if (y == null || !y.getClass().equals(this.getClass()) || this.boardArrangement.length != ((Board) y).boardArrangement.length) {
+            return false;
+        }
+
+        for (int i = 0; i < this.boardArrangement.length; i++) {
+            if (this.boardArrangement[i] != ((Board) y).boardArrangement[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Iterable<Board> neighbors() {
@@ -165,17 +180,17 @@ public class Board {
         }
         neighbours = new Queue<>();
         int arrLength = this.boardArrangement.length;
-        int dimension = dimension();
+        int dim = dimension();
         int[] neighbourIndex = {-1, -1, -1, -1};
         int index = 0;
-        if ((blankIndex - 1) / dimension == blankIndex / dimension) {
+        if ((blankIndex - 1) / dim == blankIndex / dim) {
             neighbourIndex[index++] = blankIndex - 1;
         }
-        if ((blankIndex + 1) / dimension == blankIndex / dimension) {
+        if ((blankIndex + 1) / dim == blankIndex / dim) {
             neighbourIndex[index++] = blankIndex + 1;
         }
-        neighbourIndex[index++] = blankIndex + dimension;
-        neighbourIndex[index++] = blankIndex - dimension;
+        neighbourIndex[index++] = blankIndex + dim;
+        neighbourIndex[index++] = blankIndex - dim;
 
         for (int c : neighbourIndex) {
             if (c >= 0 && c < arrLength) {
