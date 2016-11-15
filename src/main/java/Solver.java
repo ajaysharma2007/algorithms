@@ -1,7 +1,5 @@
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Stack;
 
 /**
  * Created by ajay on 11/8/16.
@@ -18,34 +16,6 @@ public class Solver {
         this.initialBoard = initial;
     }
 
-    public static void main(String[] args) {
-        In in = new In("/home/ajay/Downloads/algorithms/8puzzle/" +
-                "puzzle3x3-unsolvable1.txt");
-        int n = in.readInt();
-        int[][] blocks = new int[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                blocks[i][j] = in.readInt();
-        Board initial = new Board(blocks);
-
-        // solve the puzzle
-        Solver solver = new Solver(initial);
-
-        // print solution to standard output
-        if (!solver.isSolvable())
-            StdOut.println("No solution possible");
-        else {
-            StdOut.println("Minimum number of moves = " + solver.moves());
-            for (Board board : solver.solution())
-                StdOut.println(board);
-        }
-    }
-
-    private void copyQueue(Queue<Board> source, Queue<Board> dest) {
-        for (Board sourceBoardItem : source) {
-            dest.enqueue(sourceBoardItem);
-        }
-    }
 
     public boolean isSolvable() {
 
@@ -61,31 +31,26 @@ public class Solver {
                         new BoardInfo(-1, null, null, -1),
                         this.initialBoard.hamming());
 
+        BoardInfo smallestOrgBoardInfo = initialBoardInfo;
+        resultBoardInfo = smallestOrgBoardInfo;
+        if (resultBoardInfo.board.isGoal()) {
+            return true;
+        }
+
         Board twinBoard = this.initialBoard.twin();
         BoardInfo twinBoardInfo =
                 new BoardInfo(0, twinBoard, new BoardInfo(-1, null, null, -1),
                         twinBoard.hamming());
+        BoardInfo smallestTwinBoardInfo = twinBoardInfo;
 
-        boardQueue.insert(initialBoardInfo);
-        twinQueue.insert(twinBoardInfo);
-
-        BoardInfo smallestOrgBoardInfo = boardQueue.delMin();
-        BoardInfo smallestTwinBoardInfo = twinQueue.delMin();
-
-        smallestOrgBoardInfo.solution = new Queue<>();
-        smallestOrgBoardInfo.solution.enqueue(smallestOrgBoardInfo.board);
-
-        resultBoardInfo = smallestOrgBoardInfo;
+        if (smallestTwinBoardInfo.board.isGoal()) {
+            resultBoardInfo.moves = -1;
+            resultBoardInfo.board = null;
+            resultBoardInfo.prevBoardInfo = null;
+            return false;
+        }
 
         while (true) {
-            if (smallestOrgBoardInfo.board.isGoal()) {
-                return true;
-            }
-            if (smallestTwinBoardInfo.board.isGoal()) {
-                resultBoardInfo.moves = -1;
-                resultBoardInfo.solution = null;
-                return false;
-            }
             for (Board neighbourBoard : smallestOrgBoardInfo.board.neighbors()) {
                 if (!neighbourBoard.equals(
                         smallestOrgBoardInfo.prevBoardInfo.board)) {
@@ -96,12 +61,10 @@ public class Solver {
                 }
             }
             smallestOrgBoardInfo = boardQueue.delMin();
-            smallestOrgBoardInfo.solution = new Queue<>();
-            copyQueue(smallestOrgBoardInfo.prevBoardInfo.solution,
-                    smallestOrgBoardInfo.solution);
-            smallestOrgBoardInfo.solution.enqueue(smallestOrgBoardInfo.board);
-
             resultBoardInfo = smallestOrgBoardInfo;
+            if (resultBoardInfo.board.isGoal()) {
+                return true;
+            }
 
             for (Board neighbourBoard : smallestTwinBoardInfo.board.neighbors()) {
                 if (!neighbourBoard.equals(
@@ -113,6 +76,12 @@ public class Solver {
                 }
             }
             smallestTwinBoardInfo = twinQueue.delMin();
+            if (smallestTwinBoardInfo.board.isGoal()) {
+                resultBoardInfo.moves = -1;
+                resultBoardInfo.board = null;
+                resultBoardInfo.prevBoardInfo = null;
+                return false;
+            }
         }
     }
 
@@ -128,14 +97,25 @@ public class Solver {
         if (resultBoardInfo == null) {
             isSolvable();
         }
-        return resultBoardInfo.solution;
+        if (resultBoardInfo.moves == -1) {
+            return null;
+        }
+
+        Stack<Board> solution = new Stack<>();
+        BoardInfo currBoardInfo = resultBoardInfo;
+        solution.push(currBoardInfo.board);
+        while (currBoardInfo.prevBoardInfo.board != null) {
+            solution.push(currBoardInfo.prevBoardInfo.board);
+            currBoardInfo = currBoardInfo.prevBoardInfo;
+        }
+
+        return solution;
     }
 
     private static class BoardInfo implements Comparable<BoardInfo> {
         private int moves;
         private Board board;
         private BoardInfo prevBoardInfo;
-        private Queue<Board> solution;
         private int hamming = 0;
 
         private BoardInfo(int noOfMoves, Board bestBoard,
