@@ -1,6 +1,7 @@
 package kdtree;
 
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 
 /**
@@ -89,6 +90,50 @@ public class KdTree {
                 return contains(n.rb, p, depth + 1);
             }
         }
+    }
+
+    public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null) {
+            throw new NullPointerException("Reference rect can't be null");
+        }
+        Queue<Point2D> pointsInRange = new Queue<>();
+        return range(rect, root, pointsInRange, 0);
+    }
+
+    private Iterable<Point2D> range(RectHV rect, Node node, Queue<Point2D> pointsInRange, int depth) {
+        if (node == null) {
+            return pointsInRange;
+        }
+
+        int currentDim = depth % treeDim;
+
+        if (currentDim == 0) {
+            if (node.p.x() < rect.xmin()) {
+                range(rect, node.lb, pointsInRange, depth + 1);
+            } else if (node.p.x() >= rect.xmax()) {
+                range(rect, node.rb, pointsInRange, depth + 1);
+            } else {
+
+                if (rect.ymin() < node.p.y() && node.p.y() < rect.ymax()) {
+                    pointsInRange.enqueue(node.p);
+                }
+                range(rect, node.lb, pointsInRange, depth + 1);
+                range(rect, node.rb, pointsInRange, depth + 1);
+            }
+        } else {
+            if (node.p.y() < rect.ymin()) {
+                range(rect, node.lb, pointsInRange, depth + 1);
+            } else if (node.p.y() >= rect.ymax()) {
+                return range(rect, node.rb, pointsInRange, depth + 1);
+            } else {
+                if (rect.xmin() < node.p.x() && node.p.x() < rect.xmax()) {
+                    pointsInRange.enqueue(node.p);
+                }
+                range(rect, node.lb, pointsInRange, depth + 1);
+                range(rect, node.rb, pointsInRange, depth + 1);
+            }
+        }
+        return pointsInRange;
     }
 
     private static class Node {
