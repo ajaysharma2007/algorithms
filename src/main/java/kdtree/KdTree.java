@@ -203,10 +203,8 @@ public class KdTree {
         StdDraw.setPenRadius();
         if (currentDim == 0) {
             StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.line(n.p.x(), 0, n.p.x(), 1);
         } else {
             StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.line(0, n.p.y(), 1, );
         }
     }
 
