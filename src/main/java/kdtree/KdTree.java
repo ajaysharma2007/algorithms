@@ -3,6 +3,7 @@ package kdtree;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
 /**
  * Created by ajay on 11/29/16.
@@ -134,6 +135,79 @@ public class KdTree {
             }
         }
         return pointsInRange;
+    }
+
+    public Point2D nearest(Point2D queryPoint) {
+        return nearest(root, queryPoint, 0, root.p);
+    }
+
+    private Point2D nearest(Node currNode, Point2D queryPoint, int depth, Point2D min) {
+        if (currNode == null) {
+            return min;
+        }
+
+        if (currNode.p.distanceSquaredTo(queryPoint) < min.distanceSquaredTo(queryPoint)) {
+            min = currNode.p;
+        }
+
+        int currentDim = depth % treeDim;
+
+        if (currentDim == 0) {
+            if (currNode.p.x() < queryPoint.x()) {
+                min = nearest(currNode.lb, queryPoint, depth + 1, min);
+                if (new Point2D(queryPoint.x(), 0).distanceSquaredTo(new Point2D(currNode.p.x(), 0)) < queryPoint.distanceSquaredTo(min)) {
+                    min = nearest(currNode.rb, queryPoint, depth + 1, min);
+                }
+            } else {
+                min = nearest(currNode.rb, queryPoint, depth + 1, min);
+                if (new Point2D(queryPoint.x(), 0).distanceSquaredTo(new Point2D(currNode.p.x(), 0)) < queryPoint.distanceSquaredTo(min)) {
+                    min = nearest(currNode.lb, queryPoint, depth + 1, min);
+                }
+            }
+        } else {
+            if (currNode.p.y() < queryPoint.y()) {
+                min = nearest(currNode.lb, queryPoint, depth + 1, min);
+                if (new Point2D(0, queryPoint.y()).distanceSquaredTo(new Point2D(0, currNode.p.y())) < queryPoint.distanceSquaredTo(min)) {
+                    min = nearest(currNode.rb, queryPoint, depth + 1, min);
+                }
+            } else {
+                min = nearest(currNode.rb, queryPoint, depth + 1, min);
+                if (new Point2D(0, queryPoint.y()).distanceSquaredTo(new Point2D(0, currNode.p.y())) < queryPoint.distanceSquaredTo(min)) {
+                    min = nearest(currNode.lb, queryPoint, depth + 1, min);
+                }
+            }
+        }
+
+        return min;
+    }
+
+    public void draw() {
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.line(0, 0, 0, 1);
+        StdDraw.line(0, 1, 1, 1);
+        StdDraw.line(0, 0, 1, 0);
+        StdDraw.line(1, 0, 1, 1);
+        draw(root, 0);
+    }
+
+    private void draw(Node n, int depth) {
+        if (n == null) {
+            return;
+        }
+
+        int currentDim = depth % treeDim;
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(0.01);
+        n.p.draw();
+
+        StdDraw.setPenRadius();
+        if (currentDim == 0) {
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.line(n.p.x(), 0, n.p.x(), 1);
+        } else {
+            StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.line(0, n.p.y(), 1, );
+        }
     }
 
     private static class Node {
