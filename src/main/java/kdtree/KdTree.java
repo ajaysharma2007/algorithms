@@ -5,10 +5,15 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Created by ajay on 11/29/16.
  */
 public class KdTree {
+    private static final String LEFT = "LEFT";
+    private static final String RIGHT = "RIGHT";
     private int size = 0;
     private int treeDim = 2;
     private Node root = null;
@@ -202,10 +207,17 @@ public class KdTree {
         StdDraw.line(0, 1, 1, 1);
         StdDraw.line(0, 0, 1, 0);
         StdDraw.line(1, 0, 1, 1);
-        draw(root, 0, null);
+        Set<Point2D> xSortedPoints = new TreeSet<>(Point2D.X_ORDER);
+        Point2D initialPoint = new Point2D(0, 0);
+        xSortedPoints.add(initialPoint);
+        xSortedPoints.add(new Point2D(1, 1));
+        Set<Point2D> ySortedPoints = new TreeSet<>(Point2D.Y_ORDER);
+        ySortedPoints.add(initialPoint);
+        ySortedPoints.add(new Point2D(1, 1));
+        draw(root, 0, initialPoint, xSortedPoints, ySortedPoints, RIGHT);
     }
 
-    private void draw(Node n, int depth, Point2D previousPoint) {
+    private void draw(Node n, int depth, Point2D previousPoint, Set<Point2D> xSortedPoints, Set<Point2D> ySortedPoints, String branchDir) {
         if (n == null) {
             return;
         }
@@ -219,14 +231,41 @@ public class KdTree {
         StdDraw.setPenRadius();
         if (currentDim == 0) {
             StdDraw.setPenColor(StdDraw.RED);
-            if (previousPoint == null) {
-                StdDraw.line(n.p.x(), 0, n.p.x(), 1);
+            if (branchDir == RIGHT) {
+                StdDraw.line(n.p.x(), previousPoint.y(), n.p.x(), ((TreeSet<Point2D>) ySortedPoints).higher(n.p).y());
             } else {
-                StdDraw.line();
+                StdDraw.line(n.p.x(), previousPoint.y(), n.p.x(), ((TreeSet<Point2D>) ySortedPoints).lower(n.p).y());
             }
         } else {
             StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.line();
+            if (branchDir == RIGHT) {
+                StdDraw.line(previousPoint.x(), n.p.y(), ((TreeSet<Point2D>) xSortedPoints).higher(n.p).x(), n.p.y());
+            } else {
+                StdDraw.line(previousPoint.x(), n.p.y(), ((TreeSet<Point2D>) xSortedPoints).lower(n.p).x(), n.p.y());
+            }
+        }
+    }
+
+    private void setPoints(Set<Point2D> xPoints, Set<Point2D> yPoints) {
+        addPoint(root, 0, xPoints, yPoints);
+    }
+
+    private void addPoint(Node currNode, int depth, Set xPoints, Set yPoints) {
+
+        int currentDim = depth % treeDim;
+
+        if (currNode.lb != null) {
+            addPoint(currNode.lb, depth + 1, xPoints, yPoints);
+        }
+
+        if (currentDim == 0) {
+            xPoints.add(currNode.p);
+        } else {
+            yPoints.add(currNode.p);
+        }
+
+        if (currNode.rb != null) {
+            addPoint(currNode.rb, depth + 1, xPoints, yPoints);
         }
     }
 
