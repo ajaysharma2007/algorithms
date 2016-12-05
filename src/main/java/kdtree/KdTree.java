@@ -40,6 +40,10 @@ public class KdTree {
             return new Node(p, null, null);
         }
 
+        if (p.equals(n.p)) {
+            return n;
+
+        }
         int currentDim = depth % treeDim;
 
         if (currentDim == 0) {
@@ -101,7 +105,8 @@ public class KdTree {
         return range(rect, root, pointsInRange, 0);
     }
 
-    private Iterable<Point2D> range(RectHV rect, Node node, Queue<Point2D> pointsInRange, int depth) {
+    private Iterable<Point2D> range(RectHV rect, Node node,
+                                    Queue<Point2D> pointsInRange, int depth) {
         if (node == null) {
             return pointsInRange;
         }
@@ -141,12 +146,14 @@ public class KdTree {
         return nearest(root, queryPoint, 0, root.p);
     }
 
-    private Point2D nearest(Node currNode, Point2D queryPoint, int depth, Point2D min) {
+    private Point2D nearest(Node currNode, Point2D queryPoint,
+                            int depth, Point2D min) {
         if (currNode == null) {
             return min;
         }
 
-        if (currNode.p.distanceSquaredTo(queryPoint) < min.distanceSquaredTo(queryPoint)) {
+        if (currNode.p.distanceSquaredTo(queryPoint) <
+                min.distanceSquaredTo(queryPoint)) {
             min = currNode.p;
         }
 
@@ -155,24 +162,32 @@ public class KdTree {
         if (currentDim == 0) {
             if (currNode.p.x() < queryPoint.x()) {
                 min = nearest(currNode.lb, queryPoint, depth + 1, min);
-                if (new Point2D(queryPoint.x(), 0).distanceSquaredTo(new Point2D(currNode.p.x(), 0)) < queryPoint.distanceSquaredTo(min)) {
+                if (new Point2D(queryPoint.x(), 0).distanceSquaredTo(
+                        new Point2D(currNode.p.x(), 0)) <
+                        queryPoint.distanceSquaredTo(min)) {
                     min = nearest(currNode.rb, queryPoint, depth + 1, min);
                 }
             } else {
                 min = nearest(currNode.rb, queryPoint, depth + 1, min);
-                if (new Point2D(queryPoint.x(), 0).distanceSquaredTo(new Point2D(currNode.p.x(), 0)) < queryPoint.distanceSquaredTo(min)) {
+                if (new Point2D(queryPoint.x(), 0).distanceSquaredTo(
+                        new Point2D(currNode.p.x(), 0)) <
+                        queryPoint.distanceSquaredTo(min)) {
                     min = nearest(currNode.lb, queryPoint, depth + 1, min);
                 }
             }
         } else {
             if (currNode.p.y() < queryPoint.y()) {
                 min = nearest(currNode.lb, queryPoint, depth + 1, min);
-                if (new Point2D(0, queryPoint.y()).distanceSquaredTo(new Point2D(0, currNode.p.y())) < queryPoint.distanceSquaredTo(min)) {
+                if (new Point2D(0, queryPoint.y()).distanceSquaredTo(
+                        new Point2D(0, currNode.p.y())) <
+                        queryPoint.distanceSquaredTo(min)) {
                     min = nearest(currNode.rb, queryPoint, depth + 1, min);
                 }
             } else {
                 min = nearest(currNode.rb, queryPoint, depth + 1, min);
-                if (new Point2D(0, queryPoint.y()).distanceSquaredTo(new Point2D(0, currNode.p.y())) < queryPoint.distanceSquaredTo(min)) {
+                if (new Point2D(0, queryPoint.y()).distanceSquaredTo(
+                        new Point2D(0, currNode.p.y())) <
+                        queryPoint.distanceSquaredTo(min)) {
                     min = nearest(currNode.lb, queryPoint, depth + 1, min);
                 }
             }
@@ -187,15 +202,16 @@ public class KdTree {
         StdDraw.line(0, 1, 1, 1);
         StdDraw.line(0, 0, 1, 0);
         StdDraw.line(1, 0, 1, 1);
-        draw(root, 0);
+        draw(root, 0, null);
     }
 
-    private void draw(Node n, int depth) {
+    private void draw(Node n, int depth, Point2D previousPoint) {
         if (n == null) {
             return;
         }
 
         int currentDim = depth % treeDim;
+
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setPenRadius(0.01);
         n.p.draw();
@@ -203,8 +219,14 @@ public class KdTree {
         StdDraw.setPenRadius();
         if (currentDim == 0) {
             StdDraw.setPenColor(StdDraw.RED);
+            if (previousPoint == null) {
+                StdDraw.line(n.p.x(), 0, n.p.x(), 1);
+            } else {
+                StdDraw.line();
+            }
         } else {
             StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.line();
         }
     }
 
