@@ -50,14 +50,15 @@ public class PointSET {
         }
         TreeSet<Point2D> rangeSet = new TreeSet<>();
         double rectXMin = rect.xmin();
+        double rectXMax = rect.xmax();
         Point2D ceilingPoint = points.ceiling(new Point2D(rectXMin, rect.ymin()));
-        Point2D floorPoint = points.floor(new Point2D(rectXMin, rect.ymax()));
+        Point2D floorPoint = points.floor(new Point2D(rectXMax, rect.ymax()));
 
         if (ceilingPoint != null && floorPoint != null &&
-                ceilingPoint.compareTo(floorPoint) < 0) {
-            for (Point2D point2D : points.subSet(ceilingPoint, floorPoint)) {
+                ceilingPoint.compareTo(floorPoint) <= 0) {
+            for (Point2D point2D : points.subSet(ceilingPoint, true, floorPoint, true)) {
                 double point2Dx = point2D.x();
-                if (point2Dx > rectXMin && point2Dx < rect.xmax()) {
+                if (point2Dx >= rectXMin && point2Dx <= rectXMax) {
                     rangeSet.add(point2D);
                 }
             }

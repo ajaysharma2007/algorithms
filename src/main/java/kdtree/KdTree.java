@@ -5,7 +5,6 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
-import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -134,11 +133,11 @@ public class KdTree {
         if (currentDim == 0) {
             if (nodeX < rectXMin) {
                 range(rect, node.rb, pointsInRange, depth + 1);
-            } else if (nodeX >= rectXMax) {
+            } else if (nodeX > rectXMax) {
                 range(rect, node.lb, pointsInRange, depth + 1);
             } else {
 
-                if (rectYMin < nodeY && nodeY < rectYMax) {
+                if (rectYMin <= nodeY && nodeY <= rectYMax) {
                     pointsInRange.enqueue(node.p);
                 }
                 range(rect, node.lb, pointsInRange, depth + 1);
@@ -147,10 +146,10 @@ public class KdTree {
         } else {
             if (nodeY < rectYMin) {
                 range(rect, node.rb, pointsInRange, depth + 1);
-            } else if (nodeY >= rectYMax) {
+            } else if (nodeY > rectYMax) {
                 return range(rect, node.lb, pointsInRange, depth + 1);
             } else {
-                if (rectXMin < nodeX && nodeX < rectXMax) {
+                if (rectXMin <= nodeX && nodeX <= rectXMax) {
                     pointsInRange.enqueue(node.p);
                 }
                 range(rect, node.lb, pointsInRange, depth + 1);
@@ -161,6 +160,9 @@ public class KdTree {
     }
 
     public Point2D nearest(Point2D queryPoint) {
+        if (root == null) {
+            return null;
+        }
         return nearest(root, queryPoint, 0, root.p);
     }
 
@@ -178,7 +180,7 @@ public class KdTree {
         int currentDim = depth % treeDim;
 
         if (currentDim == 0) {
-            if (currNode.p.x() < queryPoint.x()) {
+            if (queryPoint.x() < currNode.p.x()) {
                 min = nearest(currNode.lb, queryPoint, depth + 1, min);
                 if (new Point2D(queryPoint.x(), 0).distanceSquaredTo(
                         new Point2D(currNode.p.x(), 0)) <
@@ -194,7 +196,7 @@ public class KdTree {
                 }
             }
         } else {
-            if (currNode.p.y() < queryPoint.y()) {
+            if (queryPoint.y() < currNode.p.y()) {
                 min = nearest(currNode.lb, queryPoint, depth + 1, min);
                 if (new Point2D(0, queryPoint.y()).distanceSquaredTo(
                         new Point2D(0, currNode.p.y())) <
@@ -311,7 +313,7 @@ public class KdTree {
                 if ((higherPointNode.startPoint.y() <= referenceNode.p.y() &&
                         referenceNode.p.y() <= higherPointNode.endPoint.y()) ||
                         (higherPointNode.endPoint.y() <= referenceNode.p.y() &&
-                           referenceNode.p.y() <= higherPointNode.startPoint.y())) {
+                                referenceNode.p.y() <= higherPointNode.startPoint.y())) {
                     return higherPointNode.p;
                 }
                 higherPointNode = point2DNodes.higher(higherPointNode);
@@ -322,7 +324,7 @@ public class KdTree {
                 if ((higherPointNode.startPoint.x() <= referenceNode.p.x() &&
                         referenceNode.p.x() <= higherPointNode.endPoint.x()) ||
                         (higherPointNode.endPoint.x() <= referenceNode.p.x() &&
-                            referenceNode.p.x() <= higherPointNode.startPoint.x())) {
+                                referenceNode.p.x() <= higherPointNode.startPoint.x())) {
                     return higherPointNode.p;
                 }
                 higherPointNode = point2DNodes.higher(higherPointNode);
@@ -338,7 +340,7 @@ public class KdTree {
                 if (lowerPointNode.startPoint.y() <= referenceNode.p.y() &&
                         referenceNode.p.y() <= lowerPointNode.endPoint.y() ||
                         lowerPointNode.endPoint.y() <= referenceNode.p.y() &&
-                            referenceNode.p.y() <= lowerPointNode.startPoint.y()) {
+                                referenceNode.p.y() <= lowerPointNode.startPoint.y()) {
                     return lowerPointNode.p;
                 }
                 lowerPointNode = point2DNodes.lower(lowerPointNode);
@@ -348,7 +350,7 @@ public class KdTree {
                 if (lowerPointNode.startPoint.x() <= referenceNode.p.x() &&
                         referenceNode.p.x() <= lowerPointNode.endPoint.x() ||
                         lowerPointNode.endPoint.x() <= referenceNode.p.x() &&
-                            referenceNode.p.x() <= lowerPointNode.startPoint.x()) {
+                                referenceNode.p.x() <= lowerPointNode.startPoint.x()) {
                     return lowerPointNode.p;
                 }
                 lowerPointNode = point2DNodes.lower(lowerPointNode);
@@ -372,14 +374,14 @@ public class KdTree {
             this.rb = rightBranch;
         }
 
-        private static class XOrder implements Comparator<Node>, Serializable {
-            public int compare(Node p, Node q) {
+        private static class XOrder implements Comparator<KdTree.Node> {
+            public int compare(KdTree.Node p, KdTree.Node q) {
                 return Double.compare(p.p.x(), q.p.x());
             }
         }
 
-        private static class YOrder implements Comparator<Node>, Serializable {
-            public int compare(Node p, Node q) {
+        private static class YOrder implements Comparator<KdTree.Node> {
+            public int compare(KdTree.Node p, KdTree.Node q) {
                 return Double.compare(p.p.y(), q.p.y());
             }
         }
