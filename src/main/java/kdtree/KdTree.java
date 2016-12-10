@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,6 +15,8 @@ import java.util.TreeSet;
 public class KdTree {
     private static final String LEFT = "LEFT";
     private static final String RIGHT = "RIGHT";
+    private static final String HORIZONTAL = "HORIZONTAL";
+    private static final String VERTICAL = "VERTICAL";
     private int size = 0;
     private int treeDim = 2;
     private Node root = null;
@@ -207,17 +210,37 @@ public class KdTree {
         StdDraw.line(0, 1, 1, 1);
         StdDraw.line(0, 0, 1, 0);
         StdDraw.line(1, 0, 1, 1);
-        Set<Point2D> xSortedPoints = new TreeSet<>(Point2D.X_ORDER);
+        Set<Node> xSortedNodes = new TreeSet<>(Node.X_ORDER);
         Point2D initialPoint = new Point2D(0, 0);
-        xSortedPoints.add(initialPoint);
-        xSortedPoints.add(new Point2D(1, 1));
-        Set<Point2D> ySortedPoints = new TreeSet<>(Point2D.Y_ORDER);
-        ySortedPoints.add(initialPoint);
-        ySortedPoints.add(new Point2D(1, 1));
-        draw(root, 0, initialPoint, xSortedPoints, ySortedPoints, RIGHT);
+        Point2D xFinalPoint = new Point2D(1, 0);
+        Point2D yInitialPoint = new Point2D(0, 1);
+        Point2D finalPoint = new Point2D(1, 1);
+
+        Node initialHorizontalNode = new Node(initialPoint, null, null);
+        initialHorizontalNode.startPoint = initialPoint;
+        initialHorizontalNode.endPoint = xFinalPoint;
+
+        Node finalHorizontalNode = new Node(yInitialPoint, null, null);
+        finalHorizontalNode.startPoint = yInitialPoint;
+        finalHorizontalNode.endPoint = finalPoint;
+
+        Node initialVerticalNode = new Node(initialPoint, null, null);
+        initialVerticalNode.startPoint = initialPoint;
+        initialVerticalNode.endPoint = yInitialPoint;
+
+        Node finalVerticalNode = new Node(xFinalPoint, null, null);
+        finalVerticalNode.startPoint = xFinalPoint;
+        finalVerticalNode.endPoint = finalPoint;
+
+        xSortedNodes.add(initialVerticalNode);
+        xSortedNodes.add(finalVerticalNode);
+        Set<Node> ySortedNodes = new TreeSet<>(Node.Y_ORDER);
+        ySortedNodes.add(initialHorizontalNode);
+        ySortedNodes.add(finalHorizontalNode);
+        draw(root, 0, initialPoint, xSortedNodes, ySortedNodes, RIGHT);
     }
 
-    private void draw(Node n, int depth, Point2D previousPoint, Set<Point2D> xSortedPoints, Set<Point2D> ySortedPoints, String branchDir) {
+    private void draw(Node n, int depth, Point2D previousPoint, Set<Node> xSortedNodes, Set<Node> ySortedNodes, String branchDir) {
         if (n == null) {
             return;
         }
@@ -231,17 +254,84 @@ public class KdTree {
         StdDraw.setPenRadius();
         if (currentDim == 0) {
             StdDraw.setPenColor(StdDraw.RED);
-            if (branchDir == RIGHT) {
-                StdDraw.line(n.p.x(), previousPoint.y(), n.p.x(), ((TreeSet<Point2D>) ySortedPoints).higher(n.p).y());
+            if (branchDir.equals(RIGHT)) {
+                double yEndPoint = getHigher(ySortedNodes, n, VERTICAL).y();
+                StdDraw.line(n.p.x(), previousPoint.y(), n.p.x(), yEndPoint);
+                n.startPoint = new Point2D(n.p.x(), previousPoint.y());
+                n.endPoint = new Point2D(n.p.x(), yEndPoint);
             } else {
-                StdDraw.line(n.p.x(), previousPoint.y(), n.p.x(), ((TreeSet<Point2D>) ySortedPoints).lower(n.p).y());
+                double yEndPoint = getLower(ySortedNodes, n, VERTICAL).y();
+                StdDraw.line(n.p.x(), previousPoint.y(), n.p.x(), yEndPoint);
+                n.startPoint = new Point2D(n.p.x(), previousPoint.y());
+                n.endPoint = new Point2D(n.p.x(), yEndPoint);
             }
+            xSortedNodes.add(n);
         } else {
             StdDraw.setPenColor(StdDraw.BLUE);
-            if (branchDir == RIGHT) {
-                StdDraw.line(previousPoint.x(), n.p.y(), ((TreeSet<Point2D>) xSortedPoints).higher(n.p).x(), n.p.y());
+            if (branchDir.equals(RIGHT)) {
+                double xEndPoint = getHigher(xSortedNodes, n, HORIZONTAL).x();
+                StdDraw.line(previousPoint.x(), n.p.y(), xEndPoint, n.p.y());
+                n.startPoint = new Point2D(previousPoint.x(), n.p.y());
+                n.endPoint = new Point2D(xEndPoint, n.p.y());
             } else {
-                StdDraw.line(previousPoint.x(), n.p.y(), ((TreeSet<Point2D>) xSortedPoints).lower(n.p).x(), n.p.y());
+                double xEndPoint = getLower(xSortedNodes, n, HORIZONTAL).x();
+                StdDraw.line(previousPoint.x(), n.p.y(), xEndPoint, n.p.y());
+                n.startPoint = new Point2D(previousPoint.x(), n.p.y());
+                n.endPoint = new Point2D(xEndPoint, n.p.y());
+            }
+            ySortedNodes.add(n);
+        }
+
+        if (n.lb != null) {
+            draw(n.lb, depth + 1, n.p, xSortedNodes, ySortedNodes, LEFT);
+        }
+
+        if (n.rb != null) {
+            draw(n.rb, depth + 1, n.p, xSortedNodes, ySortedNodes, RIGHT);
+        }
+    }
+
+    private Point2D getHigher(Set<Node> nodes, Node referenceNode, String lineDir) {
+        TreeSet<Node> point2DNodes = ((TreeSet<Node>) nodes);
+        Node higherPointNode = point2DNodes.higher(referenceNode);
+        if (lineDir.equals(HORIZONTAL)) {
+            while (true) {
+                if (higherPointNode.startPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= higherPointNode.endPoint.y() ||
+                        higherPointNode.endPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= higherPointNode.startPoint.y()) {
+                    return higherPointNode.p;
+                }
+                higherPointNode = point2DNodes.higher(higherPointNode);
+            }
+
+        } else {
+            while (true) {
+                if (higherPointNode.startPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= higherPointNode.endPoint.x() ||
+                        higherPointNode.endPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= higherPointNode.startPoint.x()) {
+                    return higherPointNode.p;
+                }
+                higherPointNode = point2DNodes.higher(higherPointNode);
+            }
+        }
+    }
+
+    private Point2D getLower(Set<Node> nodes, Node referenceNode, String lineDir) {
+        TreeSet<Node> point2DNodes = ((TreeSet<Node>) nodes);
+        Node lowerPointNode = point2DNodes.lower(referenceNode);
+        if (lineDir.equals(HORIZONTAL)) {
+            while (true) {
+                if (lowerPointNode.startPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= lowerPointNode.endPoint.y() ||
+                        lowerPointNode.endPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= lowerPointNode.startPoint.y()) {
+                    return lowerPointNode.p;
+                }
+                lowerPointNode = point2DNodes.lower(lowerPointNode);
+            }
+        } else {
+            while (true) {
+                if (lowerPointNode.startPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= lowerPointNode.endPoint.x() ||
+                        lowerPointNode.endPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= lowerPointNode.startPoint.x()) {
+                    return lowerPointNode.p;
+                }
+                lowerPointNode = point2DNodes.lower(lowerPointNode);
             }
         }
     }
@@ -270,10 +360,14 @@ public class KdTree {
     }
 
     private static class Node {
+        public static final Comparator<Node> X_ORDER = new Node.XOrder();
+        public static final Comparator<Node> Y_ORDER = new Node.YOrder();
+
         private Point2D p;
-        private RectHV rect;
         private Node lb;
         private Node rb;
+        private Point2D startPoint;
+        private Point2D endPoint;
 
         private Node(Point2D point2D, Node leftBranch, Node rightBranch) {
             this.p = point2D;
@@ -281,8 +375,21 @@ public class KdTree {
             this.rb = rightBranch;
         }
 
-        public void setRect(RectHV rect) {
-            this.rect = rect;
+        private static class XOrder implements Comparator<Node> {
+            public int compare(Node p, Node q) {
+                if (p.p.x() < q.p.x()) return -1;
+                if (p.p.x() > q.p.x()) return +1;
+                return 0;
+            }
         }
+
+        private static class YOrder implements Comparator<Node> {
+            public int compare(Node p, Node q) {
+                if (p.p.y() < q.p.y()) return -1;
+                if (p.p.y() > q.p.y()) return +1;
+                return 0;
+            }
+        }
+
     }
 }
