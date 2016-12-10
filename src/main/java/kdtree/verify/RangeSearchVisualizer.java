@@ -25,7 +25,7 @@ public class RangeSearchVisualizer {
 
     public static void main(String[] args) {
 
-        String filename = args[0];
+        String filename = "/Users/ajay/Downloads/Coursera/Algorithms Part I/Week-5/2-Geometric Applications of BSTs/Assignment/kdtree/input10K.txt";
         In in = new In(filename);
 
         StdDraw.enableDoubleBuffering();

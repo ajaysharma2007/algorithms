@@ -26,14 +26,14 @@ public class PointSET {
 
     public void insert(Point2D p) {
         if (p == null) {
-            throw  new NullPointerException("Point to be inserted can't be null");
+            throw new NullPointerException("Point to be inserted can't be null");
         }
         points.add(p);
     }
 
     public boolean contains(Point2D p) {
         if (p == null) {
-            throw  new NullPointerException("Point to be searched can't be null");
+            throw new NullPointerException("Point to be searched can't be null");
         }
         return points.contains(p);
     }
@@ -46,16 +46,19 @@ public class PointSET {
 
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) {
-            throw  new NullPointerException("Reference rect can't be null");
+            throw new NullPointerException("Reference rect can't be null");
         }
         TreeSet<Point2D> rangeSet = new TreeSet<>();
         double rectXMin = rect.xmin();
-        for (Point2D point2D : points.subSet(
-                points.ceiling(new Point2D(rectXMin, rect.ymin())),
-                points.floor(new Point2D(rectXMin, rect.ymax())))) {
-            double point2Dx = point2D.x();
-            if (point2Dx > rectXMin && point2Dx < rect.xmax()) {
-                rangeSet.add(point2D);
+        Point2D ceilingPoint = points.ceiling(new Point2D(rectXMin, rect.ymin()));
+        Point2D floorPoint = points.floor(new Point2D(rectXMin, rect.ymax()));
+
+        if (ceilingPoint != null && floorPoint != null && ceilingPoint.compareTo(floorPoint) < 0) {
+            for (Point2D point2D : points.subSet(ceilingPoint, floorPoint)) {
+                double point2Dx = point2D.x();
+                if (point2Dx > rectXMin && point2Dx < rect.xmax()) {
+                    rangeSet.add(point2D);
+                }
             }
         }
         return rangeSet;
@@ -63,7 +66,7 @@ public class PointSET {
 
     public Point2D nearest(Point2D p) {
         if (p == null) {
-            throw  new NullPointerException("Reference point can't be null");
+            throw new NullPointerException("Reference point can't be null");
         }
         if (this.isEmpty()) {
             return null;

@@ -121,26 +121,35 @@ public class KdTree {
 
         int currentDim = depth % treeDim;
 
+        double nodeX = node.p.x();
+        double nodeY = node.p.y();
+
+        double rectXMin = rect.xmin();
+        double rectXMax = rect.xmax();
+
+        double rectYMin = rect.ymin();
+        double rectYMax = rect.ymax();
+
         if (currentDim == 0) {
-            if (node.p.x() < rect.xmin()) {
-                range(rect, node.lb, pointsInRange, depth + 1);
-            } else if (node.p.x() >= rect.xmax()) {
+            if (nodeX < rectXMin) {
                 range(rect, node.rb, pointsInRange, depth + 1);
+            } else if (nodeX >= rectXMax) {
+                range(rect, node.lb, pointsInRange, depth + 1);
             } else {
 
-                if (rect.ymin() < node.p.y() && node.p.y() < rect.ymax()) {
+                if (rectYMin < nodeY && nodeY < rectYMax) {
                     pointsInRange.enqueue(node.p);
                 }
                 range(rect, node.lb, pointsInRange, depth + 1);
                 range(rect, node.rb, pointsInRange, depth + 1);
             }
         } else {
-            if (node.p.y() < rect.ymin()) {
-                range(rect, node.lb, pointsInRange, depth + 1);
-            } else if (node.p.y() >= rect.ymax()) {
-                return range(rect, node.rb, pointsInRange, depth + 1);
+            if (nodeY < rectYMin) {
+                range(rect, node.rb, pointsInRange, depth + 1);
+            } else if (nodeY >= rectYMax) {
+                return range(rect, node.lb, pointsInRange, depth + 1);
             } else {
-                if (rect.xmin() < node.p.x() && node.p.x() < rect.xmax()) {
+                if (rectXMin < nodeX && nodeX < rectXMax) {
                     pointsInRange.enqueue(node.p);
                 }
                 range(rect, node.lb, pointsInRange, depth + 1);
@@ -333,29 +342,6 @@ public class KdTree {
                 }
                 lowerPointNode = point2DNodes.lower(lowerPointNode);
             }
-        }
-    }
-
-    private void setPoints(Set<Point2D> xPoints, Set<Point2D> yPoints) {
-        addPoint(root, 0, xPoints, yPoints);
-    }
-
-    private void addPoint(Node currNode, int depth, Set xPoints, Set yPoints) {
-
-        int currentDim = depth % treeDim;
-
-        if (currNode.lb != null) {
-            addPoint(currNode.lb, depth + 1, xPoints, yPoints);
-        }
-
-        if (currentDim == 0) {
-            xPoints.add(currNode.p);
-        } else {
-            yPoints.add(currNode.p);
-        }
-
-        if (currNode.rb != null) {
-            addPoint(currNode.rb, depth + 1, xPoints, yPoints);
         }
     }
 
