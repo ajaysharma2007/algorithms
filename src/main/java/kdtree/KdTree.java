@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -249,7 +250,9 @@ public class KdTree {
         draw(root, 0, initialPoint, xSortedNodes, ySortedNodes, RIGHT);
     }
 
-    private void draw(Node n, int depth, Point2D previousPoint, Set<Node> xSortedNodes, Set<Node> ySortedNodes, String branchDir) {
+    private void draw(Node n, int depth, Point2D previousPoint,
+                      Set<Node> xSortedNodes,
+                      Set<Node> ySortedNodes, String branchDir) {
         if (n == null) {
             return;
         }
@@ -305,8 +308,10 @@ public class KdTree {
         Node higherPointNode = point2DNodes.higher(referenceNode);
         if (lineDir.equals(HORIZONTAL)) {
             while (true) {
-                if (higherPointNode.startPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= higherPointNode.endPoint.y() ||
-                        higherPointNode.endPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= higherPointNode.startPoint.y()) {
+                if ((higherPointNode.startPoint.y() <= referenceNode.p.y() &&
+                        referenceNode.p.y() <= higherPointNode.endPoint.y()) ||
+                        (higherPointNode.endPoint.y() <= referenceNode.p.y() &&
+                           referenceNode.p.y() <= higherPointNode.startPoint.y())) {
                     return higherPointNode.p;
                 }
                 higherPointNode = point2DNodes.higher(higherPointNode);
@@ -314,8 +319,10 @@ public class KdTree {
 
         } else {
             while (true) {
-                if (higherPointNode.startPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= higherPointNode.endPoint.x() ||
-                        higherPointNode.endPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= higherPointNode.startPoint.x()) {
+                if ((higherPointNode.startPoint.x() <= referenceNode.p.x() &&
+                        referenceNode.p.x() <= higherPointNode.endPoint.x()) ||
+                        (higherPointNode.endPoint.x() <= referenceNode.p.x() &&
+                            referenceNode.p.x() <= higherPointNode.startPoint.x())) {
                     return higherPointNode.p;
                 }
                 higherPointNode = point2DNodes.higher(higherPointNode);
@@ -328,16 +335,20 @@ public class KdTree {
         Node lowerPointNode = point2DNodes.lower(referenceNode);
         if (lineDir.equals(HORIZONTAL)) {
             while (true) {
-                if (lowerPointNode.startPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= lowerPointNode.endPoint.y() ||
-                        lowerPointNode.endPoint.y() <= referenceNode.p.y() && referenceNode.p.y() <= lowerPointNode.startPoint.y()) {
+                if (lowerPointNode.startPoint.y() <= referenceNode.p.y() &&
+                        referenceNode.p.y() <= lowerPointNode.endPoint.y() ||
+                        lowerPointNode.endPoint.y() <= referenceNode.p.y() &&
+                            referenceNode.p.y() <= lowerPointNode.startPoint.y()) {
                     return lowerPointNode.p;
                 }
                 lowerPointNode = point2DNodes.lower(lowerPointNode);
             }
         } else {
             while (true) {
-                if (lowerPointNode.startPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= lowerPointNode.endPoint.x() ||
-                        lowerPointNode.endPoint.x() <= referenceNode.p.x() && referenceNode.p.x() <= lowerPointNode.startPoint.x()) {
+                if (lowerPointNode.startPoint.x() <= referenceNode.p.x() &&
+                        referenceNode.p.x() <= lowerPointNode.endPoint.x() ||
+                        lowerPointNode.endPoint.x() <= referenceNode.p.x() &&
+                            referenceNode.p.x() <= lowerPointNode.startPoint.x()) {
                     return lowerPointNode.p;
                 }
                 lowerPointNode = point2DNodes.lower(lowerPointNode);
@@ -361,19 +372,15 @@ public class KdTree {
             this.rb = rightBranch;
         }
 
-        private static class XOrder implements Comparator<Node> {
+        private static class XOrder implements Comparator<Node>, Serializable {
             public int compare(Node p, Node q) {
-                if (p.p.x() < q.p.x()) return -1;
-                if (p.p.x() > q.p.x()) return +1;
-                return 0;
+                return Double.compare(p.p.x(), q.p.x());
             }
         }
 
-        private static class YOrder implements Comparator<Node> {
+        private static class YOrder implements Comparator<Node>, Serializable {
             public int compare(Node p, Node q) {
-                if (p.p.y() < q.p.y()) return -1;
-                if (p.p.y() > q.p.y()) return +1;
-                return 0;
+                return Double.compare(p.p.y(), q.p.y());
             }
         }
 

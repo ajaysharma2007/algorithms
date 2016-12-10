@@ -53,7 +53,8 @@ public class PointSET {
         Point2D ceilingPoint = points.ceiling(new Point2D(rectXMin, rect.ymin()));
         Point2D floorPoint = points.floor(new Point2D(rectXMin, rect.ymax()));
 
-        if (ceilingPoint != null && floorPoint != null && ceilingPoint.compareTo(floorPoint) < 0) {
+        if (ceilingPoint != null && floorPoint != null &&
+                ceilingPoint.compareTo(floorPoint) < 0) {
             for (Point2D point2D : points.subSet(ceilingPoint, floorPoint)) {
                 double point2Dx = point2D.x();
                 if (point2Dx > rectXMin && point2Dx < rect.xmax()) {
